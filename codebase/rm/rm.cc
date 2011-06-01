@@ -1098,7 +1098,12 @@ uint16_t RM::activateSlot(uint16_t *slot_page, uint16_t activate_slot_id, uint16
 
         /* check to see if enough space is available to allocate a new slot. */
         if (SLOT_GET_FREE_SPACE(slot_page) < sizeof(uint16_t))
+	{
+            /* activate slot and update offset. */
+            slot_page[SLOT_GET_SLOT_INDEX(activate_slot_id)] = record_offset;
+
             return 0;
+	}
 
         /* assign new slot index which happens to be the current number of slots. */
         slot_page[SLOT_NEXT_SLOT_INDEX] = SLOT_GET_NUM_SLOTS(slot_page);
@@ -2231,7 +2236,9 @@ RC RM::reorganizePage(const string tableName, const unsigned pageNumber) // {{{
     if (handle.ReadPage(pageNumber, raw_page))
         return -1;
  
-    debug_data_page(raw_page, "before reorg");
+    if(debug)
+    	debug_data_page(raw_page, "before reorg");
+
     /* get free space offset. */
     free_space_offset = SLOT_GET_FREE_SPACE_OFFSET(slot_page);
 
@@ -2429,7 +2436,8 @@ void RM::reorganizePage(uint8_t *raw_page, const RID &rid, PF_FileHandle handle)
     /* new free space offset will point to where the free space begins after being compacted. */
     uint16_t new_free_space_offset = 0;
 
-    debug_data_page(raw_page, "before reorg");
+    if(debug)
+        debug_data_page(raw_page, "before reorg");
 
     /* get free space offset. */
     free_space_offset = SLOT_GET_FREE_SPACE_OFFSET(slot_page);
