@@ -13,7 +13,6 @@ using namespace std;
 
 typedef enum{ MIN = 0, MAX, SUM, AVG, COUNT } AggregateOp;
 
-
 // The following functions use  the following 
 // format for the passed data.
 //    For int and real: use 4 bytes
@@ -264,9 +263,13 @@ class NLJoin : public Iterator { // {{{
     TableScan *right_iter;
     Condition cond;
     unsigned n_buffer_pages;
-    vector<Attribute> left_attrs;
+    vector<Attribute> anchor_attrs;
     vector<Attribute> right_attrs;
     vector<Attribute> join_attrs;
+    bool next_anchor_tuple_ready;
+
+    Attribute anchor_attr;
+    Attribute rhs_attr;
 
     // Nested-Loop join operator
     public:

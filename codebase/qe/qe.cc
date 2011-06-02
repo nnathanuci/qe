@@ -3,6 +3,30 @@
 
 using namespace std;
 
+void qe_dump_tuple_element(const void *data, const Attribute &a)
+{
+    char *data_ptr = (char *) data;
+
+    cout << "(";
+
+    if(a.type == TypeInt)
+    {
+        cout << (*(int *) data_ptr);
+    }
+    else if(a.type == TypeReal)
+    {
+        cout << (*(float *) data_ptr);
+    }
+    else if(a.type == TypeVarChar)
+    {
+        unsigned int len = (*(unsigned *) data_ptr);
+        data_ptr += sizeof(unsigned);
+        cout << '"' << string((char *) data_ptr, len) << '"';
+    }
+
+    cout << ")" << endl;
+
+}
 void qe_dump_tuple(const void *data, const vector<Attribute> &attrs)
 {
     unsigned char *data_ptr = (unsigned char *) data;
