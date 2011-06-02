@@ -12,8 +12,10 @@ RC Project::getNextTuple(void *project_tuple) // {{{
     unsigned char *project_tuple_ptr = (unsigned char *) project_tuple;
     unsigned char tuple[PF_PAGE_SIZE];
 
-    if (iter->getNextTuple(tuple) == QE_EOF)
-        return QE_EOF;
+    RC rc;
+
+    if (rc = iter->getNextTuple(tuple))
+        return rc;
 
     /* need to pack the attributes in the order of the names, and so we need to enumerate the attribute vector for each name. */
     for (unsigned int i=0; i < attr_names.size(); i++)

@@ -47,8 +47,10 @@ RC Filter::getNextTuple(void *filter_tuple) // {{{
     bool found_lhs = false;
     bool found_rhs = false;
 
-    if (iter->getNextTuple(filter_tuple) == QE_EOF)
-        return QE_EOF;
+    RC rc;
+
+    if (rc = iter->getNextTuple(filter_tuple))
+        return rc;
 
     for (unsigned int i=0; i < attrs.size(); i++)
     {
