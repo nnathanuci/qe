@@ -707,6 +707,7 @@ RC IX_IndexScan::GetNextEntryNOOP(RID &rid) // {{{
            rid.slotNum = *((unsigned int *) &last_node[last_node_next*12 + 8]);
            last_node_next++;
            n_matches++;
+           return 0;
         }
         else if (cond_attr.type == TypeVarChar)
         {
