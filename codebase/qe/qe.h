@@ -40,6 +40,23 @@ class Iterator { // {{{
     public:
         virtual RC getNextTuple(void *data) = 0;
         virtual void getAttributes(vector<Attribute> &attrs) const = 0;
+
+        RC getAttribute(string name, Attribute &a)
+        {
+            vector<Attribute> attrs;
+            getAttributes(attrs);
+            for (int i=0; i < attrs.size(); i++)
+            {
+                if(name == attrs[i].name)
+                {
+                    a = attrs[i];
+                    return 0;
+                }
+            }
+
+            return 1;
+        }
+
         virtual ~Iterator() {};
 }; // }}}
 
@@ -288,5 +305,11 @@ class Aggregate : public Iterator { // {{{
         // output attrname = "MAX(rel.attr) (e.g. "MAX(emptable.empid)"))"
         void getAttributes(vector<Attribute> &attrs) const;
 }; // }}}
+
+// debug functions
+void qe_getAttribute(string &name, vector<Attribute> &attrs, Attribute &a);
+void qe_dump_condition(Condition &c, vector<Attribute> &attrs);
+void qe_dump_attribute(Attribute &a);
+void qe_dump_attributes(vector<Attribute> &attrs);
 
 #endif
