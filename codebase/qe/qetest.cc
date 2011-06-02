@@ -33,14 +33,17 @@ void createLeftTable()
     attr.name = "A";
     attr.type = TypeInt;
     attr.length = 4;
+    attrs.push_back(attr);
 
     attr.name = "B";
     attr.type = TypeInt;
     attr.length = 4;
+    attrs.push_back(attr);
 
     attr.name = "C";
     attr.type = TypeReal;
     attr.length = 4;
+    attrs.push_back(attr);
 
     RC rc = rm->createTable("left", attrs);
     assert(rc == success);
@@ -60,14 +63,17 @@ void createRightTable()
     attr.name = "B";
     attr.type = TypeInt;
     attr.length = 4;
+    attrs.push_back(attr);
 
     attr.name = "C";
     attr.type = TypeReal;
     attr.length = 4;
+    attrs.push_back(attr);
 
     attr.name = "D";
     attr.type = TypeInt;
     attr.length = 4;
+    attrs.push_back(attr);
 
     RC rc = rm->createTable("right", attrs);
     assert(rc == success);
