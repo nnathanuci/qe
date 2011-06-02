@@ -41,11 +41,12 @@ class Iterator { // {{{
         virtual RC getNextTuple(void *data) = 0;
         virtual void getAttributes(vector<Attribute> &attrs) const = 0;
 
+        /* uses getAttributes to first get the attr vector, and then finds by name. */
         RC getAttribute(string name, Attribute &a)
         {
             vector<Attribute> attrs;
             getAttributes(attrs);
-            for (int i=0; i < attrs.size(); i++)
+            for (unsigned int i=0; i < attrs.size(); i++)
             {
                 if(name == attrs[i].name)
                 {
@@ -56,6 +57,23 @@ class Iterator { // {{{
 
             return 1;
         }
+
+        /* finds the attribute when supplied an attribute vector by name. */
+        RC getAttribute(const vector<Attribute> &attrs, string name, Attribute &a)
+        {
+            for (unsigned int i=0; i < attrs.size(); i++)
+            {
+                if(name == attrs[i].name)
+                {
+                    a = attrs[i];
+                    return 0;
+                }
+            }
+
+            return 1;
+        }
+
+
 
         virtual ~Iterator() {};
 }; // }}}
@@ -205,7 +223,12 @@ class Filter : public Iterator { // {{{
     Iterator *iter;
     Condition cond;
     vector<Attribute> attrs;
-    vector<string> attrNames;
+
+    Attribute lhs_attr;
+    Attribute rhs_attr;
+    AttrType rhs_type;
+
+    unsigned char rhs_value[PF_PAGE_SIZE];
 
     public:
         Filter(Iterator *input,                         // Iterator of input R
@@ -221,6 +244,10 @@ class Filter : public Iterator { // {{{
 
 class Project : public Iterator { // {{{
     // Projection operator
+    Iterator *iter;
+    vector<Attribute> attrs;
+    vector<string> attr_names;
+
     public:
         Project(Iterator *input,                            // Iterator of input R
                 const vector<string> &attrNames);           // vector containing attribute names
