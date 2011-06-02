@@ -327,95 +327,95 @@ void testCase_1()
 }
 
 
-//void testCase_2()
-//{
-//    // Functions Tested
-//    // 1. Filter -- IndexScan as input, on TypeChar attribute
-//    cout << "****In Test Case 2****" << endl;
-//    
-//    IX_IndexHandle ixHandle;
-//    ixManager->OpenIndex("right", "C", ixHandle);
-//    IndexScan *is = new IndexScan(*rm, ixHandle, "right");
-//    
-//    // Set up condition
-//    Condition cond;
-//    cond.lhsAttr = "right.C";
-//    cond.op = EQ_OP;
-//    cond.bRhsIsAttr = false;
-//    Value value;
-//    value.type = TypeReal;
-//    value.data = malloc(bufsize);
-//    *(float *)value.data = 24.0;
-//    cond.rhsValue = value;
-//    
-//    // Create Filter
-//    is->setIterator(EQ_OP, value.data);
-//    Filter filter(is, cond);
-//    
-//    // Go over the data through iterator
-//    void *data = malloc(bufsize);
-//    while(filter.getNextTuple(data) != QE_EOF)
-//    {
-//        int offset = 0;
-//        // Print right.B
-//        cout << "right.B " << *(int *)((char *)data + offset) << endl;
-//        offset += sizeof(int);
-//        
-//        // Print right.C
-//        cout << "right.C " << *(float *)((char *)data + offset) << endl;
-//        offset += sizeof(float);
-//        
-//        // Print right.D
-//        cout << "right.D " << *(int *)((char *)data + offset) << endl;
-//        offset += sizeof(int);
-//        
-//        memset(data, 0, bufsize);
-//    }
-//
-//    ixManager->CloseIndex(ixHandle);
-//    free(value.data);
-//    free(data);
-//    return;
-//}
-//
-//
-//void testCase_3()
-//{
-//    // Functions Tested
-//    // 1. Project -- TableScan as input  
-//    cout << "****In Test Case 3****" << endl;
-//    
-//    TableScan *ts = new TableScan(*rm, "right");
-//    
-//    vector<string> attrNames;
-//    attrNames.push_back("right.C");
-//    attrNames.push_back("right.D");
-//    
-//    // Create Projector 
-//    Project project(ts, attrNames);
-//    
-//    // Go over the data through iterator
-//    void *data = malloc(bufsize);
-//    while(project.getNextTuple(data) != QE_EOF)
-//    {
-//        int offset = 0;
-// 
-//        // Print right.C
-//        cout << "left.C " << *(float *)((char *)data + offset) << endl;
-//        offset += sizeof(float);
-//        
-//        // Print right.D
-//        cout << "right.D " << *(int *)((char *)data + offset) << endl;
-//        offset += sizeof(int);
-//        
-//        memset(data, 0, bufsize);
-//    }
-//    
-//    free(data);
-//    return;
-//}
-//
-//
+void testCase_2()
+{
+    // Functions Tested
+    // 1. Filter -- IndexScan as input, on TypeChar attribute
+    cout << "****In Test Case 2****" << endl;
+    
+    IX_IndexHandle ixHandle;
+    ixManager->OpenIndex("right", "C", ixHandle);
+    IndexScan *is = new IndexScan(*rm, ixHandle, "right");
+    
+    // Set up condition
+    Condition cond;
+    cond.lhsAttr = "right.C";
+    cond.op = EQ_OP;
+    cond.bRhsIsAttr = false;
+    Value value;
+    value.type = TypeReal;
+    value.data = malloc(bufsize);
+    *(float *)value.data = 24.0;
+    cond.rhsValue = value;
+    
+    // Create Filter
+    is->setIterator(EQ_OP, value.data);
+    Filter filter(is, cond);
+    
+    // Go over the data through iterator
+    void *data = malloc(bufsize);
+    while(filter.getNextTuple(data) != QE_EOF)
+    {
+        int offset = 0;
+        // Print right.B
+        cout << "right.B " << *(int *)((char *)data + offset) << endl;
+        offset += sizeof(int);
+        
+        // Print right.C
+        cout << "right.C " << *(float *)((char *)data + offset) << endl;
+        offset += sizeof(float);
+        
+        // Print right.D
+        cout << "right.D " << *(int *)((char *)data + offset) << endl;
+        offset += sizeof(int);
+        
+        memset(data, 0, bufsize);
+    }
+
+    ixManager->CloseIndex(ixHandle);
+    free(value.data);
+    free(data);
+    return;
+}
+
+
+void testCase_3()
+{
+    // Functions Tested
+    // 1. Project -- TableScan as input  
+    cout << "****In Test Case 3****" << endl;
+    
+    TableScan *ts = new TableScan(*rm, "right");
+    
+    vector<string> attrNames;
+    attrNames.push_back("right.C");
+    attrNames.push_back("right.D");
+    
+    // Create Projector 
+    Project project(ts, attrNames);
+    
+    // Go over the data through iterator
+    void *data = malloc(bufsize);
+    while(project.getNextTuple(data) != QE_EOF)
+    {
+        int offset = 0;
+ 
+        // Print right.C
+        cout << "left.C " << *(float *)((char *)data + offset) << endl;
+        offset += sizeof(float);
+        
+        // Print right.D
+        cout << "right.D " << *(int *)((char *)data + offset) << endl;
+        offset += sizeof(int);
+        
+        memset(data, 0, bufsize);
+    }
+    
+    free(data);
+    return;
+}
+
+
 //void testCase_4()
 //{
 //    // Functions Tested
@@ -1045,8 +1045,8 @@ int main()
    
     // Test Cases
     testCase_1();
-    //testCase_2();
-    //testCase_3();
+    testCase_2();
+    testCase_3();
     //testCase_4();
     //testCase_5();
     //testCase_6();
