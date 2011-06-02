@@ -35,5 +35,5 @@ $(CODEROOT)/ix/libix.a:
 
 .PHONY: clean
 clean:
-	-rm qetest *.a *.o *~ qefilter_test left* right* systemcatalog
+	-rm qetest *.a *.o *~ qefilter_test left* right* systemcatalog t1*
 	$(MAKE) -C $(CODEROOT)/ix clean
