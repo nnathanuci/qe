@@ -434,7 +434,7 @@ void testCase_4()
     
     // Create NLJoin
     NLJoin nljoin(leftIn, rightIn, cond, 10000);
-        
+
     // Go over the data through iterator
     void *data = malloc(bufsize);
     while(nljoin.getNextTuple(data) != QE_EOF)
