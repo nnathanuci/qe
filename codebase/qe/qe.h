@@ -188,7 +188,7 @@ class Filter : public Iterator { // {{{
     Iterator *iter;
     Condition cond;
     vector<Attribute> attrs;
-    vector<unsigned int> attr_pos;
+    vector<string> attrNames;
 
     public:
         Filter(Iterator *input,                         // Iterator of input R
