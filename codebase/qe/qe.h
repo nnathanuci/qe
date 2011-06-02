@@ -253,7 +253,7 @@ class Project : public Iterator { // {{{
                 const vector<string> &attrNames);           // vector containing attribute names
         ~Project();
         
-        RC getNextTuple(void *data) {return QE_EOF;};
+        RC getNextTuple(void *data);
         // For attribute in vector<Attribute>, name it as rel.attr (e.g. "emptable.empid")
         void getAttributes(vector<Attribute> &attrs) const;
 }; // }}}
@@ -338,5 +338,6 @@ void qe_getAttribute(string &name, vector<Attribute> &attrs, Attribute &a);
 void qe_dump_condition(Condition &c, vector<Attribute> &attrs);
 void qe_dump_attribute(Attribute &a);
 void qe_dump_attributes(vector<Attribute> &attrs);
+void qe_dump_data(const void *data, const vector<Attribute> &attrs);
 
 #endif

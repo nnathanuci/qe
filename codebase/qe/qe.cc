@@ -3,6 +3,59 @@
 
 using namespace std;
 
+void qe_dump_data(const void *data, const vector<Attribute> &attrs)
+{
+    unsigned char *data_ptr = (unsigned char *) data;
+
+    //cout << "[Begin Data Dump]" << endl;
+    //for (unsigned int i = 0; i < attrs.size(); i++)
+    //{
+    //    Attribute a = attrs[i];
+
+    //    cout << "(" << a.name;
+    //    if(a.type == TypeInt)
+    //        cout << " int";
+    //    else if(a.type == TypeReal)
+    //        cout << " float";
+    //    else if(a.type == TypeVarChar)
+    //        cout << " char[" << a.length << "]";
+
+    //    if ((i+1) != attrs.size())
+    //        cout << ",";
+    //}
+
+    //cout << ")" << endl;
+    cout << "(";
+
+    for (unsigned int i = 0; i < attrs.size(); i++)
+    {
+        Attribute a = attrs[i];
+
+        if(a.type == TypeInt)
+        {
+            cout << (*(int *) data_ptr);
+            data_ptr += sizeof(int);
+        }
+        else if(a.type == TypeReal)
+        {
+            cout << (*(float *) data_ptr);
+            data_ptr += sizeof(float);
+        }
+        else if(a.type == TypeVarChar)
+        {
+            unsigned int len = (*(unsigned *) data_ptr);
+            data_ptr += sizeof(unsigned);
+            cout << '"' << string((char *) data_ptr, len) << '"';
+            data_ptr += len;
+        }
+
+        if ((i+1) != attrs.size())
+            cout << ",";
+    }
+
+    cout << ")" << endl;
+}
+
 void qe_dump_attribute(Attribute &a)
 {
     cout << "name: " << a.name << " type: ";
