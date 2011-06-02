@@ -263,12 +263,12 @@ class NLJoin : public Iterator { // {{{
     TableScan *right_iter;
     Condition cond;
     unsigned n_buffer_pages;
-    vector<Attribute> anchor_attrs;
+    vector<Attribute> left_attrs;
     vector<Attribute> right_attrs;
     vector<Attribute> join_attrs;
-    bool next_anchor_tuple_ready;
+    bool next_left_tuple_ready;
 
-    Attribute anchor_attr;
+    Attribute lhs_attr;
     Attribute rhs_attr;
 
     // Nested-Loop join operator
@@ -288,6 +288,19 @@ class NLJoin : public Iterator { // {{{
 
 class INLJoin : public Iterator { // {{{
     // Index Nested-Loop join operator
+    Iterator *left_iter;
+    TableScan *right_iter;
+    Condition cond;
+    unsigned n_buffer_pages;
+    vector<Attribute> left_attrs;
+    vector<Attribute> right_attrs;
+    vector<Attribute> join_attrs;
+    bool next_left_tuple_ready;
+
+    Attribute lhs_attr;
+    Attribute rhs_attr;
+
+
     public:
         INLJoin(Iterator *leftIn,                               // Iterator of input R
                 IndexScan *rightIn,                             // IndexScan Iterator of input S

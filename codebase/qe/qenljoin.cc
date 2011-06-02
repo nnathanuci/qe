@@ -16,18 +16,18 @@ NLJoin::NLJoin(Iterator *leftIn, TableScan *rightIn, const Condition &condition,
     cond = condition;
     n_buffer_pages = numPages;
 
-    left_iter->getAttributes(anchor_attrs);
+    left_iter->getAttributes(left_attrs);
     right_iter->getAttributes(right_attrs);
     getAttributes(join_attrs);
 
     /* get the attribute by name. */
-    getAttribute(anchor_attrs, condition.lhsAttr, anchor_attr);
+    getAttribute(left_attrs, condition.lhsAttr, lhs_attr);
 
     if (condition.bRhsIsAttr)
         getAttribute(right_attrs, condition.rhsAttr, rhs_attr);
 
     /* signal to pick up the next tuple from lhs relation. */
-    next_anchor_tuple_ready = true;
+    next_left_tuple_ready = true;
 
     // qe_dump_condition(cond, join_attrs); /* XXX: debug */
 
@@ -36,42 +36,42 @@ NLJoin::NLJoin(Iterator *leftIn, TableScan *rightIn, const Condition &condition,
 RC NLJoin::getNextTuple(void *join_data) // {{{
 {
     /* static because we will reuse the value on subsequent calls. */
-    static unsigned char anchor_tuple[PF_PAGE_SIZE];
-    static unsigned char anchor_value[PF_PAGE_SIZE];
+    static unsigned char left_tuple[PF_PAGE_SIZE];
+    static unsigned char left_value[PF_PAGE_SIZE];
     unsigned char right_tuple[PF_PAGE_SIZE];
 
     RC rc;
 
     /* anchor tuple which we use to scan the right relation. */ // {{{
-    if (next_anchor_tuple_ready)
+    if (next_left_tuple_ready)
     {
-        if ((rc = left_iter->getNextTuple(anchor_tuple)))
+        if ((rc = left_iter->getNextTuple(left_tuple)))
             return rc;
 
-        /* find the anchor attribute and copy the value from anchor_tuple into anchor_value. */
-        for (unsigned int offset = 0, i = 0; i < anchor_attrs.size(); i++)
+        /* find the anchor attribute and copy the value from left_tuple into left_value. */
+        for (unsigned int offset = 0, i = 0; i < left_attrs.size(); i++)
         {
-            if (anchor_attrs[i].name == cond.lhsAttr)
+            if (left_attrs[i].name == cond.lhsAttr)
             {
-                /* copy in the value to anchor_value. */
-                if (anchor_attrs[i].type == TypeInt)
-                    memcpy(anchor_value, anchor_tuple + offset, sizeof(int));
-                else if (anchor_attrs[i].type == TypeReal)
-                    memcpy(anchor_value, anchor_tuple + offset, sizeof(float));
-                else if (anchor_attrs[i].type == TypeVarChar)
-                    memcpy(anchor_value, anchor_tuple + offset, sizeof(unsigned) + (*(unsigned *) ((char *) anchor_tuple) + offset));
+                /* copy in the value to left_value. */
+                if (left_attrs[i].type == TypeInt)
+                    memcpy(left_value, left_tuple + offset, sizeof(int));
+                else if (left_attrs[i].type == TypeReal)
+                    memcpy(left_value, left_tuple + offset, sizeof(float));
+                else if (left_attrs[i].type == TypeVarChar)
+                    memcpy(left_value, left_tuple + offset, sizeof(unsigned) + (*(unsigned *) ((char *) left_tuple) + offset));
 
                 /* we found the attribute, we're done. */
                 break;
             }
             else
             {
-                if (anchor_attrs[i].type == TypeInt)
+                if (left_attrs[i].type == TypeInt)
                     offset += sizeof(int);
-                else if (anchor_attrs[i].type == TypeReal)
+                else if (left_attrs[i].type == TypeReal)
                     offset += sizeof(float);
-                else if (anchor_attrs[i].type == TypeVarChar)
-                    offset += sizeof(unsigned) + (*(unsigned *) ((char *) anchor_tuple + offset));
+                else if (left_attrs[i].type == TypeVarChar)
+                    offset += sizeof(unsigned) + (*(unsigned *) ((char *) left_tuple + offset));
             }
         }
 
@@ -79,9 +79,9 @@ RC NLJoin::getNextTuple(void *join_data) // {{{
         right_iter->setIterator();
 
         /* unflag signal, wait until we've finished reading in the whole of the rhs relation, before this is flagged again. */
-        next_anchor_tuple_ready = false;
+        next_left_tuple_ready = false;
 
-        //cout << "anchor: "; qe_dump_tuple(anchor_tuple, anchor_attrs); /* XXX: debug */
+        //cout << "anchor: "; qe_dump_tuple(left_tuple, left_attrs); /* XXX: debug */
     } // }}}
 
     while (!(rc = right_iter->getNextTuple(right_tuple)))
@@ -118,42 +118,42 @@ RC NLJoin::getNextTuple(void *join_data) // {{{
 
         /* create the join tuple. */ // {{{
         {
-             unsigned int anchor_size = 0;
+             unsigned int left_size = 0;
              unsigned int right_size = 0;
 
-             for (unsigned int i = 0; i < anchor_attrs.size(); i++)
+             for (unsigned int i = 0; i < left_attrs.size(); i++)
              {
-                     /* copy in the value to anchor_value. */
-                     if (anchor_attrs[i].type == TypeInt)
-                         anchor_size += sizeof(int);
-                     else if (anchor_attrs[i].type == TypeReal)
-                         anchor_size += sizeof(float);
-                     else if (anchor_attrs[i].type == TypeVarChar)
-                         anchor_size += sizeof(unsigned) + (*(unsigned *) ((char *) anchor_tuple) + anchor_size);
+                     /* copy in the value to left_value. */
+                     if (left_attrs[i].type == TypeInt)
+                         left_size += sizeof(int);
+                     else if (left_attrs[i].type == TypeReal)
+                         left_size += sizeof(float);
+                     else if (left_attrs[i].type == TypeVarChar)
+                         left_size += sizeof(unsigned) + (*(unsigned *) ((char *) left_tuple) + left_size);
              }
 
              for (unsigned int i = 0; i < right_attrs.size(); i++)
              {
-                     /* copy in the value to anchor_value. */
+                     /* copy in the value to left_value. */
                      if (right_attrs[i].type == TypeInt)
                          right_size += sizeof(int);
                      else if (right_attrs[i].type == TypeReal)
                          right_size += sizeof(float);
                      else if (right_attrs[i].type == TypeVarChar)
-                         right_size += sizeof(unsigned) + (*(unsigned *) ((char *) anchor_tuple) + right_size);
+                         right_size += sizeof(unsigned) + (*(unsigned *) ((char *) left_tuple) + right_size);
              }
 
-             memcpy((char *) join_data, anchor_tuple, anchor_size);
-             memcpy((char *) join_data + anchor_size, right_tuple, right_size);
+             memcpy((char *) join_data, left_tuple, left_size);
+             memcpy((char *) join_data + left_size, right_tuple, right_size);
         }
         // }}}
         
         /* compare values, we don't care if we're comparing float with ints, etc. */ // {{{
-        if (anchor_attr.type == TypeInt)
+        if (lhs_attr.type == TypeInt)
         {
             if (rhs_attr.type == TypeReal)
             {
-                int lhs = *(int *) anchor_value;
+                int lhs = *(int *) left_value;
                 float rhs = *(float *) rhs_value;
      
                 if (QENLJOIN_VALUE_COMP_OP(cond.op, lhs, rhs))
@@ -161,18 +161,18 @@ RC NLJoin::getNextTuple(void *join_data) // {{{
             }
             else if (rhs_attr.type == TypeInt)
             {
-                int lhs = *(int *) anchor_value;
+                int lhs = *(int *) left_value;
                 int rhs = *(int *) rhs_value;
      
                 if (QENLJOIN_VALUE_COMP_OP(cond.op, lhs, rhs))
                     return 0;
             }
         }
-        else if (anchor_attr.type == TypeReal)
+        else if (lhs_attr.type == TypeReal)
         {
             if (rhs_attr.type == TypeReal)
             {
-                float lhs = *(float *) anchor_value;
+                float lhs = *(float *) left_value;
                 float rhs = *(float *) rhs_value;
      
                 if (QENLJOIN_VALUE_COMP_OP(cond.op, lhs, rhs))
@@ -180,16 +180,16 @@ RC NLJoin::getNextTuple(void *join_data) // {{{
             }
             else if (rhs_attr.type == TypeInt)
             {
-                float lhs = *(float *) anchor_value;
+                float lhs = *(float *) left_value;
                 int rhs = *(int *) rhs_value;
      
                 if (QENLJOIN_VALUE_COMP_OP(cond.op, lhs, rhs))
                     return 0;
             }
         }
-        else if (anchor_attr.type == TypeVarChar && rhs_attr.type == TypeVarChar)
+        else if (lhs_attr.type == TypeVarChar && rhs_attr.type == TypeVarChar)
         {
-            string lhs(((char *) anchor_value) + sizeof(unsigned), (*(unsigned *) anchor_value));
+            string lhs(((char *) left_value) + sizeof(unsigned), (*(unsigned *) left_value));
             string rhs(((char *) rhs_value) + sizeof(unsigned), (*(unsigned *) rhs_value));
      
             if (QENLJOIN_VALUE_COMP_OP(cond.op, lhs, rhs))
@@ -200,7 +200,7 @@ RC NLJoin::getNextTuple(void *join_data) // {{{
     if (rc == QE_EOF)
     {
         /* we're done scanning rhs relation, signal a new anchor, and start over. */
-        next_anchor_tuple_ready = true;
+        next_left_tuple_ready = true;
         return getNextTuple(join_data);
     }
     else
