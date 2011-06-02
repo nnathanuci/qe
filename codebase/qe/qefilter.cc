@@ -1,4 +1,4 @@
-# include "qe.h"
+#include "qe.h"
 
 //class Filter : public Iterator {
 //    // Filter operator
@@ -32,4 +32,8 @@ Filter::Filter(Iterator *input, const Condition &condition) // {{{
 RC Filter::getNextTuple(void *data) // {{{
 {
     return QE_EOF;
+} // }}}
+
+Filter::~Filter() // {{{
+{
 } // }}}
