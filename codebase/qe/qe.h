@@ -9,6 +9,15 @@
 
 # define QE_EOF (-1)  // end of the index scan
 
+#define QE_VALUE_COMP_OP(op, lhs, rhs) \
+  (  ((op) == EQ_OP && (lhs) == (rhs)) || \
+     ((op) == LT_OP && ((lhs) < (rhs))) || \
+     ((op) == GT_OP && ((lhs) > (rhs))) || \
+     ((op) == LE_OP && ((lhs) <= (rhs))) || \
+     ((op) == GE_OP && ((lhs) >= (rhs))) || \
+     ((op) == NE_OP && ((lhs) != (rhs))) || \
+     ((op) == NO_OP)  )
+
 using namespace std;
 
 typedef enum{ MIN = 0, MAX, SUM, AVG, COUNT } AggregateOp;
@@ -289,7 +298,7 @@ class NLJoin : public Iterator { // {{{
 class INLJoin : public Iterator { // {{{
     // Index Nested-Loop join operator
     Iterator *left_iter;
-    TableScan *right_iter;
+    IndexScan *right_iter;
     Condition cond;
     unsigned n_buffer_pages;
     vector<Attribute> left_attrs;
@@ -310,7 +319,7 @@ class INLJoin : public Iterator { // {{{
         
         ~INLJoin();
 
-        RC getNextTuple(void *data) {return QE_EOF;};
+        RC getNextTuple(void *data);
         // For attribute in vector<Attribute>, name it as rel.attr (e.g. "emptable.empid")
         void getAttributes(vector<Attribute> &attrs) const;
 }; // }}}

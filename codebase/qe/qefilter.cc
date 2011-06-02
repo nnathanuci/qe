@@ -1,14 +1,5 @@
 #include "qe.h"
 
-#define QEFILTER_VALUE_COMP_OP(op, lhs, rhs) \
-  (  ((op) == EQ_OP && (lhs) == (rhs)) || \
-     ((op) == LT_OP && ((lhs) < (rhs))) || \
-     ((op) == GT_OP && ((lhs) > (rhs))) || \
-     ((op) == LE_OP && ((lhs) <= (rhs))) || \
-     ((op) == GE_OP && ((lhs) >= (rhs))) || \
-     ((op) == NE_OP && ((lhs) != (rhs))) || \
-     ((op) == NO_OP)  )
-
 Filter::Filter(Iterator *input, const Condition &condition) // {{{
 {
     iter = input;
@@ -104,7 +95,7 @@ RC Filter::getNextTuple(void *filter_tuple) // {{{
             int lhs = *(int *) lhs_value;
             float rhs = *(float *) rhs_value;
 
-            if (QEFILTER_VALUE_COMP_OP(cond.op, lhs, rhs))
+            if (QE_VALUE_COMP_OP(cond.op, lhs, rhs))
                 return 0;
         }
         else if (rhs_type == TypeInt)
@@ -112,7 +103,7 @@ RC Filter::getNextTuple(void *filter_tuple) // {{{
             int lhs = *(int *) lhs_value;
             int rhs = *(int *) rhs_value;
 
-            if (QEFILTER_VALUE_COMP_OP(cond.op, lhs, rhs))
+            if (QE_VALUE_COMP_OP(cond.op, lhs, rhs))
                 return 0;
         }
     }
@@ -123,7 +114,7 @@ RC Filter::getNextTuple(void *filter_tuple) // {{{
             float lhs = *(float *) lhs_value;
             float rhs = *(float *) rhs_value;
 
-            if (QEFILTER_VALUE_COMP_OP(cond.op, lhs, rhs))
+            if (QE_VALUE_COMP_OP(cond.op, lhs, rhs))
                 return 0;
         }
         else if (rhs_type == TypeInt)
@@ -131,7 +122,7 @@ RC Filter::getNextTuple(void *filter_tuple) // {{{
             float lhs = *(float *) lhs_value;
             int rhs = *(int *) rhs_value;
 
-            if (QEFILTER_VALUE_COMP_OP(cond.op, lhs, rhs))
+            if (QE_VALUE_COMP_OP(cond.op, lhs, rhs))
                 return 0;
         }
     }
@@ -140,7 +131,7 @@ RC Filter::getNextTuple(void *filter_tuple) // {{{
         string lhs(((char *) lhs_value) + sizeof(unsigned), (*(unsigned *) lhs_value));
         string rhs(((char *) rhs_value) + sizeof(unsigned), (*(unsigned *) rhs_value));
 
-        if (QEFILTER_VALUE_COMP_OP(cond.op, lhs, rhs))
+        if (QE_VALUE_COMP_OP(cond.op, lhs, rhs))
             return 0;
     }
     

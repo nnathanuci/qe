@@ -1,14 +1,5 @@
 #include "qe.h"
 
-#define QENLJOIN_VALUE_COMP_OP(op, lhs, rhs) \
-  (  ((op) == EQ_OP && (lhs) == (rhs)) || \
-     ((op) == LT_OP && ((lhs) < (rhs))) || \
-     ((op) == GT_OP && ((lhs) > (rhs))) || \
-     ((op) == LE_OP && ((lhs) <= (rhs))) || \
-     ((op) == GE_OP && ((lhs) >= (rhs))) || \
-     ((op) == NE_OP && ((lhs) != (rhs))) || \
-     ((op) == NO_OP)  )
-
 NLJoin::NLJoin(Iterator *leftIn, TableScan *rightIn, const Condition &condition, const unsigned numPages) // {{{
 {
     left_iter = leftIn;
@@ -156,7 +147,7 @@ RC NLJoin::getNextTuple(void *join_data) // {{{
                 int lhs = *(int *) left_value;
                 float rhs = *(float *) rhs_value;
      
-                if (QENLJOIN_VALUE_COMP_OP(cond.op, lhs, rhs))
+                if (QE_VALUE_COMP_OP(cond.op, lhs, rhs))
                     return 0;
             }
             else if (rhs_attr.type == TypeInt)
@@ -164,7 +155,7 @@ RC NLJoin::getNextTuple(void *join_data) // {{{
                 int lhs = *(int *) left_value;
                 int rhs = *(int *) rhs_value;
      
-                if (QENLJOIN_VALUE_COMP_OP(cond.op, lhs, rhs))
+                if (QE_VALUE_COMP_OP(cond.op, lhs, rhs))
                     return 0;
             }
         }
@@ -175,7 +166,7 @@ RC NLJoin::getNextTuple(void *join_data) // {{{
                 float lhs = *(float *) left_value;
                 float rhs = *(float *) rhs_value;
      
-                if (QENLJOIN_VALUE_COMP_OP(cond.op, lhs, rhs))
+                if (QE_VALUE_COMP_OP(cond.op, lhs, rhs))
                     return 0;
             }
             else if (rhs_attr.type == TypeInt)
@@ -183,7 +174,7 @@ RC NLJoin::getNextTuple(void *join_data) // {{{
                 float lhs = *(float *) left_value;
                 int rhs = *(int *) rhs_value;
      
-                if (QENLJOIN_VALUE_COMP_OP(cond.op, lhs, rhs))
+                if (QE_VALUE_COMP_OP(cond.op, lhs, rhs))
                     return 0;
             }
         }
@@ -192,7 +183,7 @@ RC NLJoin::getNextTuple(void *join_data) // {{{
             string lhs(((char *) left_value) + sizeof(unsigned), (*(unsigned *) left_value));
             string rhs(((char *) rhs_value) + sizeof(unsigned), (*(unsigned *) rhs_value));
      
-            if (QENLJOIN_VALUE_COMP_OP(cond.op, lhs, rhs))
+            if (QE_VALUE_COMP_OP(cond.op, lhs, rhs))
                 return 0;
         } // }}}
     }
