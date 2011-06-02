@@ -3,9 +3,9 @@
 
 #include <vector>
 
-#include "pf/pf.h"
-#include "rm/rm.h"
-#include "ix/ix.h"
+#include "../pf/pf.h"
+#include "../rm/rm.h"
+#include "../ix/ix.h"
 
 # define QE_EOF (-1)  // end of the index scan
 
@@ -35,16 +35,16 @@ struct Condition {
 };
 
 
-class Iterator {
+class Iterator { // {{{
     // All the relational operators and access methods are iterators.
     public:
         virtual RC getNextTuple(void *data) = 0;
         virtual void getAttributes(vector<Attribute> &attrs) const = 0;
         virtual ~Iterator() {};
-};
+}; // }}}
 
 
-class TableScan : public Iterator
+class TableScan : public Iterator // {{{
 {
     // A wrapper inheriting Iterator over RM_ScanIterator
     public:
@@ -96,7 +96,7 @@ class TableScan : public Iterator
             attrs = this->attrs;
             unsigned i;
             
-            // For attribute in vector<Attribute>, name it as rel.attr
+            // For attribute in vector<Attribute>, name it as rel.attr (e.g. "emptable.empid")
             for(i = 0; i < attrs.size(); ++i)
             {
                 string tmp = tablename;
@@ -110,10 +110,10 @@ class TableScan : public Iterator
         {
             iter->close();
         };
-};
+}; // }}}
 
 
-class IndexScan : public Iterator
+class IndexScan : public Iterator // {{{
 {
     // A wrapper inheriting Iterator over IX_IndexScan
     public:
@@ -166,7 +166,7 @@ class IndexScan : public Iterator
             attrs = this->attrs;
             unsigned i;
 
-            // For attribute in vector<Attribute>, name it as rel.attr
+            // For attribute in vector<Attribute>, name it as rel.attr (e.g. "emptable.empid")
             for(i = 0; i < attrs.size(); ++i)
             {
                 string tmp = tablename;
@@ -180,24 +180,29 @@ class IndexScan : public Iterator
         {
             iter->CloseScan();
         };
-};
+}; // }}}
 
 
-class Filter : public Iterator {
+class Filter : public Iterator { // {{{
     // Filter operator
+    Iterator *iter;
+    Condition cond;
+    vector<Attribute> attrs;
+    vector<unsigned int> attr_pos;
+
     public:
         Filter(Iterator *input,                         // Iterator of input R
                const Condition &condition               // Selection condition 
         );
         ~Filter();
         
-        RC getNextTuple(void *data) {return QE_EOF;};
-        // For attribute in vector<Attribute>, name it as rel.attr
+        RC getNextTuple(void *data);
+        // For attribute in vector<Attribute>, name it as rel.attr (e.g. "emptable.empid")
         void getAttributes(vector<Attribute> &attrs) const;
-};
+}; // }}}
 
 
-class Project : public Iterator {
+class Project : public Iterator { // {{{
     // Projection operator
     public:
         Project(Iterator *input,                            // Iterator of input R
@@ -205,12 +210,12 @@ class Project : public Iterator {
         ~Project();
         
         RC getNextTuple(void *data) {return QE_EOF;};
-        // For attribute in vector<Attribute>, name it as rel.attr
+        // For attribute in vector<Attribute>, name it as rel.attr (e.g. "emptable.empid")
         void getAttributes(vector<Attribute> &attrs) const;
-};
+}; // }}}
 
 
-class NLJoin : public Iterator {
+class NLJoin : public Iterator { // {{{
     // Nested-Loop join operator
     public:
         NLJoin(Iterator *leftIn,                             // Iterator of input R
@@ -221,12 +226,12 @@ class NLJoin : public Iterator {
         ~NLJoin();
         
         RC getNextTuple(void *data) {return QE_EOF;};
-        // For attribute in vector<Attribute>, name it as rel.attr
+        // For attribute in vector<Attribute>, name it as rel.attr (e.g. "emptable.empid")
         void getAttributes(vector<Attribute> &attrs) const;
-};
+}; // }}}
 
 
-class INLJoin : public Iterator {
+class INLJoin : public Iterator { // {{{
     // Index Nested-Loop join operator
     public:
         INLJoin(Iterator *leftIn,                               // Iterator of input R
@@ -238,12 +243,12 @@ class INLJoin : public Iterator {
         ~INLJoin();
 
         RC getNextTuple(void *data) {return QE_EOF;};
-        // For attribute in vector<Attribute>, name it as rel.attr
+        // For attribute in vector<Attribute>, name it as rel.attr (e.g. "emptable.empid")
         void getAttributes(vector<Attribute> &attrs) const;
-};
+}; // }}}
 
 
-class HashJoin : public Iterator {
+class HashJoin : public Iterator { // {{{
     // Hash join operator
     public:
         HashJoin(Iterator *leftIn,                                // Iterator of input R
@@ -255,12 +260,12 @@ class HashJoin : public Iterator {
         ~HashJoin();
 
         RC getNextTuple(void *data) {return QE_EOF;};
-        // For attribute in vector<Attribute>, name it as rel.attr
+        // For attribute in vector<Attribute>, name it as rel.attr (e.g. "emptable.empid")
         void getAttributes(vector<Attribute> &attrs) const;
-};
+}; // }}}
 
 
-class Aggregate : public Iterator {
+class Aggregate : public Iterator { // {{{
     // Aggregation operator
     public:
         Aggregate(Iterator *input,                              // Iterator of input R
@@ -280,8 +285,8 @@ class Aggregate : public Iterator {
         RC getNextTuple(void *data) {return QE_EOF;};
         // Please name the output attribute as aggregateOp(aggAttr)
         // E.g. Relation=rel, attribute=attr, aggregateOp=MAX
-        // output attrname = "MAX(rel.attr)"
+        // output attrname = "MAX(rel.attr) (e.g. "MAX(emptable.empid)"))"
         void getAttributes(vector<Attribute> &attrs) const;
-};
+}; // }}}
 
 #endif
