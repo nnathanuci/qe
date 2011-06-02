@@ -4,10 +4,12 @@ include ../makefile.inc
 all: libqe.a qetest
 
 # lib file dependencies
-libqe.a: libqe.a(qe.o)  # and possibly other .o files
+libqe.a: libqe.a(qe.o qefilter.o)  # and possibly other .o files
 
 # c file dependencies
 qe.o: qe.h
+
+qefilter.o: qe.h
 
 qetest.o: qe.h
 
