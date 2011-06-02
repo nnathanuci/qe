@@ -416,63 +416,63 @@ void testCase_3()
 }
 
 
-//void testCase_4()
-//{
-//    // Functions Tested
-//    // 1. NLJoin -- on TypeInt Attribute
-//    cout << "****In Test Case 4****" << endl;
-//    
-//    // Prepare the iterator and condition
-//    TableScan *leftIn = new TableScan(*rm, "left");
-//    TableScan *rightIn = new TableScan(*rm, "right");
-//    
-//    Condition cond;
-//    cond.lhsAttr = "left.B";
-//    cond.op= EQ_OP;
-//    cond.bRhsIsAttr = true;
-//    cond.rhsAttr = "right.B";
-//    
-//    // Create NLJoin
-//    NLJoin nljoin(leftIn, rightIn, cond, 10000);
-//        
-//    // Go over the data through iterator
-//    void *data = malloc(bufsize);
-//    while(nljoin.getNextTuple(data) != QE_EOF)
-//    {
-//        int offset = 0;
-// 
-//        // Print left.A
-//        cout << "left.A " << *(int *)((char *)data + offset) << endl;
-//        offset += sizeof(int);
-//        
-//        // Print left.B
-//        cout << "left.B " << *(int *)((char *)data + offset) << endl;
-//        offset += sizeof(int);
-// 
-//        // Print left.C
-//        cout << "left.C " << *(float *)((char *)data + offset) << endl;
-//        offset += sizeof(float);
-//        
-//        // Print right.B
-//        cout << "right.B " << *(int *)((char *)data + offset) << endl;
-//        offset += sizeof(int);
-// 
-//        // Print right.C
-//        cout << "right.C " << *(float *)((char *)data + offset) << endl;
-//        offset += sizeof(float);
-//        
-//        // Print right.D
-//        cout << "right.D " << *(int *)((char *)data + offset) << endl;
-//        offset += sizeof(int);
-//        
-//        memset(data, 0, bufsize);
-//    }
-//    
-//    free(data);
-//    return;
-//}
-//
-//
+void testCase_4()
+{
+    // Functions Tested
+    // 1. NLJoin -- on TypeInt Attribute
+    cout << "****In Test Case 4****" << endl;
+    
+    // Prepare the iterator and condition
+    TableScan *leftIn = new TableScan(*rm, "left");
+    TableScan *rightIn = new TableScan(*rm, "right");
+    
+    Condition cond;
+    cond.lhsAttr = "left.B";
+    cond.op= EQ_OP;
+    cond.bRhsIsAttr = true;
+    cond.rhsAttr = "right.B";
+    
+    // Create NLJoin
+    NLJoin nljoin(leftIn, rightIn, cond, 10000);
+        
+    // Go over the data through iterator
+    void *data = malloc(bufsize);
+    while(nljoin.getNextTuple(data) != QE_EOF)
+    {
+        int offset = 0;
+ 
+        // Print left.A
+        cout << "left.A " << *(int *)((char *)data + offset) << endl;
+        offset += sizeof(int);
+        
+        // Print left.B
+        cout << "left.B " << *(int *)((char *)data + offset) << endl;
+        offset += sizeof(int);
+ 
+        // Print left.C
+        cout << "left.C " << *(float *)((char *)data + offset) << endl;
+        offset += sizeof(float);
+        
+        // Print right.B
+        cout << "right.B " << *(int *)((char *)data + offset) << endl;
+        offset += sizeof(int);
+ 
+        // Print right.C
+        cout << "right.C " << *(float *)((char *)data + offset) << endl;
+        offset += sizeof(float);
+        
+        // Print right.D
+        cout << "right.D " << *(int *)((char *)data + offset) << endl;
+        offset += sizeof(int);
+        
+        memset(data, 0, bufsize);
+    }
+    
+    free(data);
+    return;
+}
+
+
 //void testCase_5()
 //{
 //    // Functions Tested
@@ -1047,7 +1047,7 @@ int main()
     testCase_1();
     testCase_2();
     testCase_3();
-    //testCase_4();
+    testCase_4();
     //testCase_5();
     //testCase_6();
     //testCase_7();

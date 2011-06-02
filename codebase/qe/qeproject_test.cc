@@ -179,10 +179,7 @@ void testcase1()
     cout << "D B" << endl;
     while(project.getNextTuple(data) != QE_EOF)
     {
-        unsigned int offset = 0;
-        unsigned int len = 0;
-
-        qe_dump_data(data, proj_attrs);
+        qe_dump_tuple(data, proj_attrs);
         
         memset(data, 0, bufsize);
     }

@@ -1,22 +1,5 @@
 #include "qe.h"
 
-//class Filter : public Iterator {
-//    // Filter operator
-//    Iterator *iter;
-//    Condition condition;
-//    vector<Attribute> attrs;
-//
-//    public:
-//        Filter(Iterator *input,                         // Iterator of input R
-//               const Condition &condition               // Selection condition 
-//        );
-//        ~Filter();
-//        
-//        RC getNextTuple(void *data);
-//        // For attribute in vector<Attribute>, name it as rel.attr (e.g. "emptable.empid")
-//        void getAttributes(vector<Attribute> &attrs) const;
-//};
-
 #define QEFILTER_VALUE_COMP_OP(op, lhs, rhs) \
   (  ((op) == EQ_OP && (lhs) == (rhs)) || \
      ((op) == LT_OP && ((lhs) < (rhs))) || \
@@ -57,14 +40,14 @@ Filter::Filter(Iterator *input, const Condition &condition) // {{{
     }
 } // }}}
 
-RC Filter::getNextTuple(void *data) // {{{
+RC Filter::getNextTuple(void *filter_tuple) // {{{
 {
     unsigned char lhs_value[PF_PAGE_SIZE];
-    unsigned char *data_ptr = (unsigned char *) data;
+    unsigned char *filter_tuple_ptr = (unsigned char *) filter_tuple;
     bool found_lhs = false;
     bool found_rhs = false;
 
-    if (iter->getNextTuple(data) == QE_EOF)
+    if (iter->getNextTuple(filter_tuple) == QE_EOF)
         return QE_EOF;
 
     for (unsigned int i=0; i < attrs.size(); i++)
@@ -75,13 +58,13 @@ RC Filter::getNextTuple(void *data) // {{{
 
               /* make copy of lhs value for comparison. */
               if (attrs[i].type == TypeInt)
-                   memcpy(lhs_value, data_ptr, sizeof(int));
+                   memcpy(lhs_value, filter_tuple_ptr, sizeof(int));
               else if (attrs[i].type == TypeReal)
-                   memcpy(lhs_value, data_ptr, sizeof(float));
+                   memcpy(lhs_value, filter_tuple_ptr, sizeof(float));
               else if (attrs[i].type == TypeVarChar)
-                   memcpy(lhs_value, data_ptr, sizeof(unsigned) + (*(unsigned *) data_ptr));
+                   memcpy(lhs_value, filter_tuple_ptr, sizeof(unsigned) + (*(unsigned *) filter_tuple_ptr));
 
-              /* if rhs is just a value, or we've found the value, then we're done with checking the data. */
+              /* if rhs is just a value, or we've found the value, then we're done with checking the filter_tuple. */
               if (!cond.bRhsIsAttr || found_rhs)
                   break;
          }
@@ -91,24 +74,24 @@ RC Filter::getNextTuple(void *data) // {{{
 
               /* make copy of rhs value for comparison. */
               if (attrs[i].type == TypeInt)
-                   memcpy(rhs_value, data_ptr, sizeof(int));
+                   memcpy(rhs_value, filter_tuple_ptr, sizeof(int));
               else if (attrs[i].type == TypeReal)
-                   memcpy(rhs_value, data_ptr, sizeof(float));
+                   memcpy(rhs_value, filter_tuple_ptr, sizeof(float));
               else if (attrs[i].type == TypeVarChar)
-                   memcpy(rhs_value, data_ptr, sizeof(unsigned) + (*(unsigned *) data_ptr));
+                   memcpy(rhs_value, filter_tuple_ptr, sizeof(unsigned) + (*(unsigned *) filter_tuple_ptr));
 
              /* if we've found lhs value, then we're done. */
              if (found_lhs)
                   break;
          }
 
-         /* advance tuple data. */
+         /* advance tuple filter_tuple. */
          if (attrs[i].type == TypeInt)
-             data_ptr += sizeof(int);
+             filter_tuple_ptr += sizeof(int);
          else if (attrs[i].type == TypeReal)
-             data_ptr += sizeof(float);
+             filter_tuple_ptr += sizeof(float);
          else if (attrs[i].type == TypeVarChar)
-             data_ptr += sizeof(unsigned) + (*(unsigned *) data_ptr);
+             filter_tuple_ptr += sizeof(unsigned) + (*(unsigned *) filter_tuple_ptr);
     }
 
     /* compare values, we don't care if we're comparing float with ints, etc. */
@@ -160,7 +143,7 @@ RC Filter::getNextTuple(void *data) // {{{
     }
     
     /* didnt find a match, continue searching. */
-    return getNextTuple(data);
+    return getNextTuple(filter_tuple);
 } // }}}
 
 Filter::~Filter() // {{{

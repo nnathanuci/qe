@@ -1,44 +1,18 @@
 #include "qe.h"
 
-//class Filter : public Iterator {
-//    // Filter operator
-//    Iterator *iter;
-//    Condition condition;
-//    vector<Attribute> attrs;
-//
-//    public:
-//        Filter(Iterator *input,                         // Iterator of input R
-//               const Condition &condition               // Selection condition 
-//        );
-//        ~Filter();
-//        
-//        RC getNextTuple(void *data);
-//        // For attribute in vector<Attribute>, name it as rel.attr (e.g. "emptable.empid")
-//        void getAttributes(vector<Attribute> &attrs) const;
-//};
-
-#define QEFILTER_VALUE_COMP_OP(op, lhs, rhs) \
-  (  ((op) == EQ_OP && (lhs) == (rhs)) || \
-     ((op) == LT_OP && ((lhs) < (rhs))) || \
-     ((op) == GT_OP && ((lhs) > (rhs))) || \
-     ((op) == LE_OP && ((lhs) <= (rhs))) || \
-     ((op) == GE_OP && ((lhs) >= (rhs))) || \
-     ((op) == NE_OP && ((lhs) != (rhs))) || \
-     ((op) == NO_OP)  )
-
-Project::Project(Iterator *input, const vector<string> &attrNames)
+Project::Project(Iterator *input, const vector<string> &attrNames) // {{{
 {
     iter = input;
     attr_names = attrNames;
     getAttributes(attrs);
-}
+} // }}}
 
-RC Project::getNextTuple(void *project_data) // {{{
+RC Project::getNextTuple(void *project_tuple) // {{{
 {
-    unsigned char *project_data_ptr = (unsigned char *) project_data;
-    unsigned char data[PF_PAGE_SIZE];
+    unsigned char *project_tuple_ptr = (unsigned char *) project_tuple;
+    unsigned char tuple[PF_PAGE_SIZE];
 
-    if (iter->getNextTuple(data) == QE_EOF)
+    if (iter->getNextTuple(tuple) == QE_EOF)
         return QE_EOF;
 
     /* need to pack the attributes in the order of the names, and so we need to enumerate the attribute vector for each name. */
@@ -50,26 +24,26 @@ RC Project::getNextTuple(void *project_data) // {{{
         {
              if (attr_names[i] == attrs[j].name)
              {
-                  /* projected attribute is appended to the data that is returned (project_data) */
+                  /* projected attribute is appended to the tuple that is returned (project_tuple) */
 
                   if (attrs[j].type == TypeInt)
                   {
-                       memcpy(project_data_ptr, (char *) data + offset, sizeof(int));
-                       project_data_ptr += sizeof(int);
+                       memcpy(project_tuple_ptr, (char *) tuple + offset, sizeof(int));
+                       project_tuple_ptr += sizeof(int);
                   }
                   else if (attrs[j].type == TypeReal)
                   {
-                       memcpy(project_data_ptr, (char *) data + offset, sizeof(float));
-                       project_data_ptr += sizeof(float);
+                       memcpy(project_tuple_ptr, (char *) tuple + offset, sizeof(float));
+                       project_tuple_ptr += sizeof(float);
                   }
                   else if (attrs[j].type == TypeVarChar)
                   {
-                       unsigned int len = (*(unsigned *) ((char *) data + offset));
-                       memcpy(project_data_ptr, (char *) data + offset, sizeof(unsigned) + len);
-                       project_data_ptr += sizeof(unsigned);
+                       unsigned int len = (*(unsigned *) ((char *) tuple + offset));
+                       memcpy(project_tuple_ptr, (char *) tuple + offset, sizeof(unsigned) + len);
+                       project_tuple_ptr += sizeof(unsigned);
                        offset += sizeof(unsigned);
-                       memcpy(project_data_ptr, (char *) data + offset, len);
-                       project_data_ptr += len;
+                       memcpy(project_tuple_ptr, (char *) tuple + offset, len);
+                       project_tuple_ptr += len;
                   }
 
                   /* finished with this attribute, scan for the next attribute/name pair. */
@@ -83,7 +57,7 @@ RC Project::getNextTuple(void *project_data) // {{{
                   else if (attrs[j].type == TypeReal)
                       offset += sizeof(float);
                   else if (attrs[j].type == TypeVarChar)
-                      offset += sizeof(unsigned) + (*(unsigned *) ((char *) data + offset));
+                      offset += sizeof(unsigned) + (*(unsigned *) ((char *) tuple + offset));
              }
         }
     }

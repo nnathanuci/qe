@@ -3,7 +3,7 @@
 
 using namespace std;
 
-void qe_dump_data(const void *data, const vector<Attribute> &attrs)
+void qe_dump_tuple(const void *data, const vector<Attribute> &attrs)
 {
     unsigned char *data_ptr = (unsigned char *) data;
 
@@ -74,7 +74,7 @@ void qe_dump_attributes(vector<Attribute> &attrs)
 {
     cout << "[Begin Attributes]" << endl;
 
-    for (int i=0; i < attrs.size(); i++)
+    for (unsigned int i=0; i < attrs.size(); i++)
     {
         cout << "  ";
         qe_dump_attribute(attrs[i]);
