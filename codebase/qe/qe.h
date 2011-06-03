@@ -253,8 +253,8 @@ class Filter : public Iterator { // {{{
 class Project : public Iterator { // {{{
     // Projection operator
     Iterator *iter;
-    vector<Attribute> attrs;
     vector<string> attr_names;
+    vector<Attribute> tuple_attrs;
 
     public:
         Project(Iterator *input,                            // Iterator of input R
@@ -432,7 +432,7 @@ class Aggregate : public Iterator { // {{{
 }; // }}}
 
 // debug functions
-void qe_get_attribute(string &name, vector<Attribute> &attrs, Attribute &a);
+void qe_get_attribute(const string &name, const vector<Attribute> &attrs, Attribute &a);
 void qe_dump_condition(Condition &c, vector<Attribute> &attrs);
 void qe_dump_attribute(Attribute &a);
 void qe_dump_attributes(vector<Attribute> &attrs);

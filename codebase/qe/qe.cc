@@ -108,7 +108,7 @@ void qe_dump_attributes(vector<Attribute> &attrs) // {{{
     cout << "[End Attributes]" << endl;
 } // }}}
 
-void qe_get_attribute(string &name, vector<Attribute> &attrs, Attribute &a) // {{{
+void qe_get_attribute(const string &name, const vector<Attribute> &attrs, Attribute &a) // {{{
 {
     for (unsigned int i = 0; i < attrs.size(); i++)
     {
