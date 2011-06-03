@@ -334,7 +334,7 @@ class HashJoin : public Iterator { // {{{
     vector<Attribute> left_attrs;
     vector<Attribute> right_attrs;
     vector<Attribute> join_attrs;
-    bool next_left_tuple_ready;
+    bool left_table_hashed;
 
     Attribute lhs_attr;
     Attribute rhs_attr;
@@ -350,7 +350,7 @@ class HashJoin : public Iterator { // {{{
         
         ~HashJoin();
 
-        RC getNextTuple(void *data) {return QE_EOF;};
+        RC getNextTuple(void *data);
         // For attribute in vector<Attribute>, name it as rel.attr (e.g. "emptable.empid")
         void getAttributes(vector<Attribute> &attrs) const;
 }; // }}}
@@ -390,6 +390,7 @@ unsigned qe_get_tuple_size(const void *tuple, const vector<Attribute> &attrs);
 void qe_get_tuple_element(const void *tuple, const vector<Attribute> &attrs, const string &name, void *value);
 int qe_cmp_values(const CompOp &op, const void *lhs_value, const void *rhs_value, const AttrType &lhs_attr_type, const AttrType &rhs_attr_type);
 unsigned qe_get_tuple_size(const void *tuple, const Attribute &attr);
+unsigned qe_get_tuple_size(const void *tuple, const AttrType &t);
 void qe_get_tuple_element(const void *tuple, const Attribute &a, void *value);
 void qe_get_tuple_element(const void *tuple, const AttrType &t, void *value);
 
