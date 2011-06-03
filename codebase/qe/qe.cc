@@ -266,6 +266,32 @@ void qe_get_tuple_element(const void *tuple, const vector<Attribute> &attrs, con
     }
 } // }}}
 
+void qe_get_tuple_element(const void *tuple, const Attribute &a, void *value) // {{{
+{
+    char *tuple_ptr = (char *) tuple;
+
+    /* copy in the value to value. */
+    if (a.type == TypeInt)
+        memcpy(value, tuple_ptr, sizeof(int));
+    else if (a.type == TypeReal)
+        memcpy(value, tuple_ptr, sizeof(float));
+    else if (a.type == TypeVarChar)
+        memcpy(value, tuple_ptr, sizeof(unsigned) + (*(unsigned *) ((char *) tuple_ptr)));
+} // }}}
+
+void qe_get_tuple_element(const void *tuple, const AttrType &t, void *value) // {{{
+{
+    char *tuple_ptr = (char *) tuple;
+
+    /* copy in the value to value. */
+    if (t == TypeInt)
+        memcpy(value, tuple_ptr, sizeof(int));
+    else if (t == TypeReal)
+        memcpy(value, tuple_ptr, sizeof(float));
+    else if (t == TypeVarChar)
+        memcpy(value, tuple_ptr, sizeof(unsigned) + (*(unsigned *) ((char *) tuple_ptr)));
+} // }}}
+
 int qe_cmp_values(const CompOp &op, const void *lhs_value, const void *rhs_value, const AttrType &lhs_attr_type, const AttrType &rhs_attr_type) // {{{
 {
         char *left_value = (char *) lhs_value;

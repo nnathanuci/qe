@@ -22,12 +22,7 @@ Filter::Filter(Iterator *input, const Condition &condition) // {{{
         rhs_type = condition.rhsValue.type;
 
         /* make copy of RHS value for comparison. */
-        if (condition.rhsValue.type == TypeInt)
-            memcpy(rhs_value, condition.rhsValue.data, sizeof(int));
-        else if (condition.rhsValue.type == TypeReal)
-            memcpy(rhs_value, condition.rhsValue.data, sizeof(float));
-        else if (condition.rhsValue.type == TypeVarChar)
-            memcpy(rhs_value, condition.rhsValue.data, sizeof(unsigned) + (*(unsigned *) condition.rhsValue.data));
+        qe_get_tuple_element(condition.rhsValue.data, condition.rhsValue.type, rhs_value);
     }
 } // }}}
 
