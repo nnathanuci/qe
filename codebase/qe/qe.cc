@@ -271,6 +271,11 @@ void qe_get_tuple_element(const void *tuple, const vector<Attribute> &attrs, con
     }
 } // }}}
 
+void qe_get_tuple_element(const void *tuple, const vector<Attribute> &attrs, const Attribute &attr, void *value) // {{{
+{
+   qe_get_tuple_element(tuple, attrs, attr.name, value);
+} // }}}
+
 void qe_get_tuple_element(const void *tuple, const AttrType &t, void *value) // {{{
 {
     char *tuple_ptr = (char *) tuple;

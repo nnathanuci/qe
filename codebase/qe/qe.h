@@ -324,6 +324,32 @@ class INLJoin : public Iterator { // {{{
         void getAttributes(vector<Attribute> &attrs) const;
 }; // }}}
 
+    typedef struct qe_hash_join_key // {{{
+    {
+        AttrType type;
+        float float_v;
+        int int_v;
+        unsigned int s_len;
+        string s;
+    
+        /* need to specify a weak comparison operator. */
+        bool operator<(const qe_hash_join_key &r) const
+        {
+            if (type == TypeInt && r.type == TypeInt)
+                 return (int_v < r.int_v);
+            else if (type == TypeInt && r.type == TypeReal)
+                 return (int_v < r.float_v);
+            if (type == TypeReal && r.type == TypeInt)
+                 return (float_v < r.int_v);
+            else if (type == TypeReal && r.type == TypeReal)
+                 return (float_v < r.float_v);
+            else if (type == TypeReal && r.type == TypeReal)
+                 return (s < r.s);
+    
+            /* any other combination is invalid. */
+            return 0;
+        }
+    } qe_hash_join_key; // }}}
 
 class HashJoin : public Iterator { // {{{
     // Index Nested-Loop join operator
@@ -334,11 +360,17 @@ class HashJoin : public Iterator { // {{{
     vector<Attribute> left_attrs;
     vector<Attribute> right_attrs;
     vector<Attribute> join_attrs;
-    bool left_table_hashed;
+    map<qe_hash_join_key, vector<char *> > hash;
 
     Attribute lhs_attr;
     Attribute rhs_attr;
 
+    bool left_values_read;
+
+    char right_tuple[PF_PAGE_SIZE];
+    unsigned int right_size;
+    unsigned int next_index;
+    vector<char *> *values;
 
     // Hash join operator
     public:
@@ -350,11 +382,13 @@ class HashJoin : public Iterator { // {{{
         
         ~HashJoin();
 
+        RC hashLeftTable();
+        void clearHash();
+
         RC getNextTuple(void *data);
         // For attribute in vector<Attribute>, name it as rel.attr (e.g. "emptable.empid")
         void getAttributes(vector<Attribute> &attrs) const;
 }; // }}}
-
 
 class Aggregate : public Iterator { // {{{
     // Aggregation operator
@@ -393,5 +427,6 @@ unsigned qe_get_tuple_size(const void *tuple, const Attribute &attr);
 unsigned qe_get_tuple_size(const void *tuple, const AttrType &t);
 void qe_get_tuple_element(const void *tuple, const Attribute &a, void *value);
 void qe_get_tuple_element(const void *tuple, const AttrType &t, void *value);
+void qe_get_tuple_element(const void *tuple, const vector<Attribute> &attrs, const Attribute &attr, void *value);
 
 #endif
