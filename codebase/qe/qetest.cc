@@ -434,7 +434,7 @@ void testCase_4()
     
     // Create NLJoin
     NLJoin nljoin(leftIn, rightIn, cond, 10000);
-
+        
     // Go over the data through iterator
     void *data = malloc(bufsize);
     while(nljoin.getNextTuple(data) != QE_EOF)
@@ -442,23 +442,23 @@ void testCase_4()
         int offset = 0;
  
         // Print left.A
-        cout << "left.A " << *(int *)((char *)data + offset) << ",";
+        cout << "left.A " << *(int *)((char *)data + offset) << endl;
         offset += sizeof(int);
         
         // Print left.B
-        cout << "left.B " << *(int *)((char *)data + offset) << ",";
+        cout << "left.B " << *(int *)((char *)data + offset) << endl;
         offset += sizeof(int);
  
         // Print left.C
-        cout << "left.C " << *(float *)((char *)data + offset) << ",";
+        cout << "left.C " << *(float *)((char *)data + offset) << endl;
         offset += sizeof(float);
         
         // Print right.B
-        cout << "right.B " << *(int *)((char *)data + offset) << ",";
+        cout << "right.B " << *(int *)((char *)data + offset) << endl;
         offset += sizeof(int);
  
         // Print right.C
-        cout << "right.C " << *(float *)((char *)data + offset) << ",";
+        cout << "right.C " << *(float *)((char *)data + offset) << endl;
         offset += sizeof(float);
         
         // Print right.D
@@ -491,7 +491,7 @@ void testCase_5()
     cond.op = EQ_OP;
     cond.bRhsIsAttr = true;
     cond.rhsAttr = "right.C";
-
+    
     // Create INLJoin
     INLJoin inljoin(leftIn, rightIn, cond, 10000);
         
@@ -560,23 +560,23 @@ void testCase_6()
         int offset = 0;
  
         // Print left.A
-        cout << "left.A " << *(int *)((char *)data + offset) << ",";
+        cout << "left.A " << *(int *)((char *)data + offset) << endl;
         offset += sizeof(int);
         
         // Print left.B
-        cout << "left.B " << *(int *)((char *)data + offset) << ",";
+        cout << "left.B " << *(int *)((char *)data + offset) << endl;
         offset += sizeof(int);
  
         // Print left.C
-        cout << "left.C " << *(float *)((char *)data + offset) << ",";
+        cout << "left.C " << *(float *)((char *)data + offset) << endl;
         offset += sizeof(float);
         
         // Print right.B
-        cout << "right.B " << *(int *)((char *)data + offset) << ",";
+        cout << "right.B " << *(int *)((char *)data + offset) << endl;
         offset += sizeof(int);
  
         // Print right.C
-        cout << "right.C " << *(float *)((char *)data + offset) << ",";
+        cout << "right.C " << *(float *)((char *)data + offset) << endl;
         offset += sizeof(float);
         
         // Print right.D
@@ -591,294 +591,294 @@ void testCase_6()
 }
 
 
-//void testCase_7()
-//{
-//    // Functions Tested
-//    // 1. INLJoin -- on TypeInt Attribute
-//    // 2. Filter -- on TypeInt Attribute
-//    cout << "****In Test Case 7****" << endl;
-//    
-//    // Prepare the iterator and condition
-//    TableScan *leftIn = new TableScan(*rm, "left");
-//    
-//    IX_IndexHandle ixHandle;
-//    ixManager->OpenIndex("right", "B", ixHandle);
-//    IndexScan *rightIn = new IndexScan(*rm, ixHandle, "right");
-//    
-//    Condition cond_j;
-//    cond_j.lhsAttr = "left.B";
-//    cond_j.op = EQ_OP;
-//    cond_j.bRhsIsAttr = true;
-//    cond_j.rhsAttr = "right.B";
-//    
-//    // Create INLJoin
-//    INLJoin *inljoin = new INLJoin(leftIn, rightIn, cond_j, 10000);
-//    
-//    // Create Filter
-//    Condition cond_f;
-//    cond_f.lhsAttr = "right.B";
-//    cond_f.op = EQ_OP;
-//    cond_f.bRhsIsAttr = false;
-//    Value value;
-//    value.type = TypeInt;
-//    value.data = malloc(bufsize);
-//    *(int *)value.data = 8;
-//    cond_f.rhsValue = value;
-//    
-//    Filter filter(inljoin, cond_f);
-//            
-//    // Go over the data through iterator
-//    void *data = malloc(bufsize);
-//    while(filter.getNextTuple(data) != QE_EOF)
-//    {
-//        int offset = 0;
-// 
-//        // Print left.A
-//        cout << "left.A " << *(int *)((char *)data + offset) << endl;
-//        offset += sizeof(int);
-//        
-//        // Print left.B
-//        cout << "left.B " << *(int *)((char *)data + offset) << endl;
-//        offset += sizeof(int);
-// 
-//        // Print left.C
-//        cout << "left.C " << *(float *)((char *)data + offset) << endl;
-//        offset += sizeof(float);
-//    
-//        // Print right.B
-//        cout << "right.B " << *(int *)((char *)data + offset) << endl;
-//        offset += sizeof(int);
-// 
-//        // Print right.C
-//        cout << "right.C " << *(float *)((char *)data + offset) << endl;
-//        offset += sizeof(float);
-//         
-//        // Print right.D
-//        cout << "right.D " << *(int *)((char *)data + offset) << endl;
-//        offset += sizeof(int);
-//        
-//        memset(data, 0, bufsize);
-//    }
-//   
-//    ixManager->CloseIndex(ixHandle); 
-//    free(value.data); 
-//    free(data);
-//    return;
-//}
-//
-//
-//void testCase_8()
-//{
-//    // Functions Tested
-//    // 1. HashJoin -- on TypeChar Attribute
-//    // 2. Project
-//    cout << "****In Test Case 8****" << endl;
-//    
-//    // Prepare the iterator and condition
-//    TableScan *leftIn = new TableScan(*rm, "left");
-//    TableScan *rightIn = new TableScan(*rm, "right");
-//    
-//    Condition cond_j;
-//    cond_j.lhsAttr = "left.C";
-//    cond_j.op = EQ_OP;
-//    cond_j.bRhsIsAttr = true;
-//    cond_j.rhsAttr = "right.C";
-//    
-//    // Create HashJoin
-//    HashJoin *hashjoin = new HashJoin(leftIn, rightIn, cond_j, 10000);
-//    
-//    // Create Projector
-//    vector<string> attrNames;
-//    attrNames.push_back("left.A");
-//    attrNames.push_back("right.D");
-//    
-//    Project project(hashjoin, attrNames);
-//        
-//    // Go over the data through iterator
-//    void *data = malloc(bufsize);
-//    while(project.getNextTuple(data) != QE_EOF)
-//    {
-//        int offset = 0;
-// 
-//        // Print left.A
-//        cout << "left.A " << *(int *)((char *)data + offset) << endl;
-//        offset += sizeof(int);
-//                
-//        // Print right.D
-//        cout << "right.D " << *(int *)((char *)data + offset) << endl;
-//        offset += sizeof(int);
-//        
-//        memset(data, 0, bufsize);
-//    }
-//   
-//    free(data);
-//    return;
-//}
-//
-//
-//void testCase_9()
-//{
-//    // Functions Tested
-//    // 1. NLJoin -- on TypeChar Attribute
-//    // 2. HashJoin -- on TypeInt Attribute
-//    
-//    cout << "****In Test Case 9****" << endl;
-//    
-//    // Prepare the iterator and condition
-//    TableScan *leftIn = new TableScan(*rm, "left");
-//    TableScan *rightIn = new TableScan(*rm, "right");
-//    
-//    Condition cond;
-//    cond.lhsAttr = "left.C";
-//    cond.op = EQ_OP;
-//    cond.bRhsIsAttr = true;
-//    cond.rhsAttr = "right.C";
-//    
-//    // Create NLJoin
-//    NLJoin *nljoin = new NLJoin(leftIn, rightIn, cond, 10000);
-//    
-//    // Create HashJoin
-//    TableScan *thirdIn = new TableScan(*rm, "left", "leftSecond");
-//    Condition cond_h;
-//    cond_h.lhsAttr = "left.B";
-//    cond_h.op = EQ_OP;
-//    cond_h.bRhsIsAttr = true;
-//    cond_h.rhsAttr = "leftSecond.B";
-//    HashJoin hashjoin(nljoin, thirdIn, cond_h, 10000);
-//        
-//    // Go over the data through iterator
-//    void *data = malloc(bufsize);
-//    while(hashjoin.getNextTuple(data) != QE_EOF)
-//    {
-//        int offset = 0;
-// 
-//        // Print left.A
-//        cout << "left.A " << *(int *)((char *)data + offset) << endl;
-//        offset += sizeof(int);
-//        
-//        // Print left.B
-//        cout << "left.B " << *(int *)((char *)data + offset) << endl;
-//        offset += sizeof(int);
-// 
-//        // Print left.C
-//        cout << "left.C " << *(float *)((char *)data + offset) << endl;
-//        offset += sizeof(float);
-//        
-//        // Print right.B
-//        cout << "right.B " << *(int *)((char *)data + offset) << endl;
-//        offset += sizeof(int);
-// 
-//        // Print right.C
-//        cout << "right.C " << *(float *)((char *)data + offset) << endl;
-//        offset += sizeof(float);
-//        
-//        // Print right.D
-//        cout << "right.D " << *(int *)((char *)data + offset) << endl;
-//        offset += sizeof(int);
-//        
-//        // Print leftSecond.A
-//        cout << "leftSecond.A " << *(int *)((char *)data + offset) << endl;
-//        offset += sizeof(int);
-//        
-//        // Print left.B
-//        cout << "leftSecond.B " << *(int *)((char *)data + offset) << endl;
-//        offset += sizeof(int);
-// 
-//        // Print leftSecond.C
-//        cout << "leftSecond.C " << *(float *)((char *)data + offset) << endl;
-//        offset += sizeof(float);
-//        
-//        memset(data, 0, bufsize);
-//    }
-//   
-//    free(data);
-//    return;
-//}
-//
-//
-//void testCase_10()
-//{
-//    // Functions Tested
-//    // 1. Filter  
-//    // 2. Project
-//    // 3. INLJoin
-//    
-//    cout << "****In Test Case 10****" << endl;
-//
-//    // Create Filter
-//    IX_IndexHandle ixLeftHandle;
-//    ixManager->OpenIndex("left", "B", ixLeftHandle);
-//    IndexScan *leftIn = new IndexScan(*rm, ixLeftHandle, "left");
-//
-//    Condition cond_f;
-//    cond_f.lhsAttr = "left.B";
-//    cond_f.op = EQ_OP;
-//    cond_f.bRhsIsAttr = false;
-//    Value value;
-//    value.type = TypeInt;
-//    value.data = malloc(bufsize);
-//    *(int *)value.data = 3;
-//    cond_f.rhsValue = value;
-//   
-//    leftIn->setIterator(EQ_OP, value.data); 
-//    Filter *filter = new Filter(leftIn, cond_f);
-//
-//    // Create Projector
-//    vector<string> attrNames;
-//    attrNames.push_back("left.A");
-//    attrNames.push_back("left.C");
-//    Project *project = new Project(filter, attrNames);
-//    
-//    // Create INLJoin
-//    IX_IndexHandle ixRightHandle;
-//    ixManager->OpenIndex("right", "C", ixRightHandle);
-//    IndexScan *rightIn = new IndexScan(*rm, ixRightHandle, "right");
-//
-//    Condition cond_j;
-//    cond_j.lhsAttr = "left.C";
-//    cond_j.op = EQ_OP;
-//    cond_j.bRhsIsAttr = true;
-//    cond_j.rhsAttr = "right.C";
-//    
-//    INLJoin inljoin(project, rightIn, cond_j, 10000); 
-//    
-//    // Go over the data through iterator
-//    void *data = malloc(bufsize);
-//    while(inljoin.getNextTuple(data) != QE_EOF)
-//    {
-//        int offset = 0;
-// 
-//        // Print left.A
-//        cout << "left.A " << *(int *)((char *)data + offset) << endl;
-//        offset += sizeof(int);
-//        
-//        // Print left.C
-//        cout << "left.C " << *(float *)((char *)data + offset) << endl;
-//        offset += sizeof(float);
-//        
-//        // Print right.B
-//        cout << "right.B " << *(int *)((char *)data + offset) << endl;
-//        offset += sizeof(int);
-// 
-//        // Print right.C
-//        cout << "right.C " << *(float *)((char *)data + offset) << endl;
-//        offset += sizeof(float);
-//        
-//        // Print right.D
-//        cout << "right.D " << *(int *)((char *)data + offset) << endl;
-//        offset += sizeof(int);
-//        
-//        memset(data, 0, bufsize);
-//    }
-//
-//    ixManager->CloseIndex(ixLeftHandle);
-//    ixManager->CloseIndex(ixRightHandle);
-//    free(value.data);
-//    free(data);
-//    return;
-//}
-//
-//
+void testCase_7()
+{
+    // Functions Tested
+    // 1. INLJoin -- on TypeInt Attribute
+    // 2. Filter -- on TypeInt Attribute
+    cout << "****In Test Case 7****" << endl;
+    
+    // Prepare the iterator and condition
+    TableScan *leftIn = new TableScan(*rm, "left");
+    
+    IX_IndexHandle ixHandle;
+    ixManager->OpenIndex("right", "B", ixHandle);
+    IndexScan *rightIn = new IndexScan(*rm, ixHandle, "right");
+    
+    Condition cond_j;
+    cond_j.lhsAttr = "left.B";
+    cond_j.op = EQ_OP;
+    cond_j.bRhsIsAttr = true;
+    cond_j.rhsAttr = "right.B";
+    
+    // Create INLJoin
+    INLJoin *inljoin = new INLJoin(leftIn, rightIn, cond_j, 10000);
+    
+    // Create Filter
+    Condition cond_f;
+    cond_f.lhsAttr = "right.B";
+    cond_f.op = EQ_OP;
+    cond_f.bRhsIsAttr = false;
+    Value value;
+    value.type = TypeInt;
+    value.data = malloc(bufsize);
+    *(int *)value.data = 8;
+    cond_f.rhsValue = value;
+    
+    Filter filter(inljoin, cond_f);
+            
+    // Go over the data through iterator
+    void *data = malloc(bufsize);
+    while(filter.getNextTuple(data) != QE_EOF)
+    {
+        int offset = 0;
+ 
+        // Print left.A
+        cout << "left.A " << *(int *)((char *)data + offset) << endl;
+        offset += sizeof(int);
+        
+        // Print left.B
+        cout << "left.B " << *(int *)((char *)data + offset) << endl;
+        offset += sizeof(int);
+ 
+        // Print left.C
+        cout << "left.C " << *(float *)((char *)data + offset) << endl;
+        offset += sizeof(float);
+    
+        // Print right.B
+        cout << "right.B " << *(int *)((char *)data + offset) << endl;
+        offset += sizeof(int);
+ 
+        // Print right.C
+        cout << "right.C " << *(float *)((char *)data + offset) << endl;
+        offset += sizeof(float);
+         
+        // Print right.D
+        cout << "right.D " << *(int *)((char *)data + offset) << endl;
+        offset += sizeof(int);
+        
+        memset(data, 0, bufsize);
+    }
+   
+    ixManager->CloseIndex(ixHandle); 
+    free(value.data); 
+    free(data);
+    return;
+}
+
+
+void testCase_8()
+{
+    // Functions Tested
+    // 1. HashJoin -- on TypeChar Attribute
+    // 2. Project
+    cout << "****In Test Case 8****" << endl;
+    
+    // Prepare the iterator and condition
+    TableScan *leftIn = new TableScan(*rm, "left");
+    TableScan *rightIn = new TableScan(*rm, "right");
+    
+    Condition cond_j;
+    cond_j.lhsAttr = "left.C";
+    cond_j.op = EQ_OP;
+    cond_j.bRhsIsAttr = true;
+    cond_j.rhsAttr = "right.C";
+    
+    // Create HashJoin
+    HashJoin *hashjoin = new HashJoin(leftIn, rightIn, cond_j, 10000);
+    
+    // Create Projector
+    vector<string> attrNames;
+    attrNames.push_back("left.A");
+    attrNames.push_back("right.D");
+    
+    Project project(hashjoin, attrNames);
+        
+    // Go over the data through iterator
+    void *data = malloc(bufsize);
+    while(project.getNextTuple(data) != QE_EOF)
+    {
+        int offset = 0;
+ 
+        // Print left.A
+        cout << "left.A " << *(int *)((char *)data + offset) << endl;
+        offset += sizeof(int);
+                
+        // Print right.D
+        cout << "right.D " << *(int *)((char *)data + offset) << endl;
+        offset += sizeof(int);
+        
+        memset(data, 0, bufsize);
+    }
+   
+    free(data);
+    return;
+}
+
+
+void testCase_9()
+{
+    // Functions Tested
+    // 1. NLJoin -- on TypeChar Attribute
+    // 2. HashJoin -- on TypeInt Attribute
+    
+    cout << "****In Test Case 9****" << endl;
+    
+    // Prepare the iterator and condition
+    TableScan *leftIn = new TableScan(*rm, "left");
+    TableScan *rightIn = new TableScan(*rm, "right");
+    
+    Condition cond;
+    cond.lhsAttr = "left.C";
+    cond.op = EQ_OP;
+    cond.bRhsIsAttr = true;
+    cond.rhsAttr = "right.C";
+    
+    // Create NLJoin
+    NLJoin *nljoin = new NLJoin(leftIn, rightIn, cond, 10000);
+    
+    // Create HashJoin
+    TableScan *thirdIn = new TableScan(*rm, "left", "leftSecond");
+    Condition cond_h;
+    cond_h.lhsAttr = "left.B";
+    cond_h.op = EQ_OP;
+    cond_h.bRhsIsAttr = true;
+    cond_h.rhsAttr = "leftSecond.B";
+    HashJoin hashjoin(nljoin, thirdIn, cond_h, 10000);
+        
+    // Go over the data through iterator
+    void *data = malloc(bufsize);
+    while(hashjoin.getNextTuple(data) != QE_EOF)
+    {
+        int offset = 0;
+ 
+        // Print left.A
+        cout << "left.A " << *(int *)((char *)data + offset) << endl;
+        offset += sizeof(int);
+        
+        // Print left.B
+        cout << "left.B " << *(int *)((char *)data + offset) << endl;
+        offset += sizeof(int);
+ 
+        // Print left.C
+        cout << "left.C " << *(float *)((char *)data + offset) << endl;
+        offset += sizeof(float);
+        
+        // Print right.B
+        cout << "right.B " << *(int *)((char *)data + offset) << endl;
+        offset += sizeof(int);
+ 
+        // Print right.C
+        cout << "right.C " << *(float *)((char *)data + offset) << endl;
+        offset += sizeof(float);
+        
+        // Print right.D
+        cout << "right.D " << *(int *)((char *)data + offset) << endl;
+        offset += sizeof(int);
+        
+        // Print leftSecond.A
+        cout << "leftSecond.A " << *(int *)((char *)data + offset) << endl;
+        offset += sizeof(int);
+        
+        // Print left.B
+        cout << "leftSecond.B " << *(int *)((char *)data + offset) << endl;
+        offset += sizeof(int);
+ 
+        // Print leftSecond.C
+        cout << "leftSecond.C " << *(float *)((char *)data + offset) << endl;
+        offset += sizeof(float);
+        
+        memset(data, 0, bufsize);
+    }
+   
+    free(data);
+    return;
+}
+
+
+void testCase_10()
+{
+    // Functions Tested
+    // 1. Filter  
+    // 2. Project
+    // 3. INLJoin
+    
+    cout << "****In Test Case 10****" << endl;
+
+    // Create Filter
+    IX_IndexHandle ixLeftHandle;
+    ixManager->OpenIndex("left", "B", ixLeftHandle);
+    IndexScan *leftIn = new IndexScan(*rm, ixLeftHandle, "left");
+
+    Condition cond_f;
+    cond_f.lhsAttr = "left.B";
+    cond_f.op = EQ_OP;
+    cond_f.bRhsIsAttr = false;
+    Value value;
+    value.type = TypeInt;
+    value.data = malloc(bufsize);
+    *(int *)value.data = 3;
+    cond_f.rhsValue = value;
+   
+    leftIn->setIterator(EQ_OP, value.data); 
+    Filter *filter = new Filter(leftIn, cond_f);
+
+    // Create Projector
+    vector<string> attrNames;
+    attrNames.push_back("left.A");
+    attrNames.push_back("left.C");
+    Project *project = new Project(filter, attrNames);
+    
+    // Create INLJoin
+    IX_IndexHandle ixRightHandle;
+    ixManager->OpenIndex("right", "C", ixRightHandle);
+    IndexScan *rightIn = new IndexScan(*rm, ixRightHandle, "right");
+
+    Condition cond_j;
+    cond_j.lhsAttr = "left.C";
+    cond_j.op = EQ_OP;
+    cond_j.bRhsIsAttr = true;
+    cond_j.rhsAttr = "right.C";
+    
+    INLJoin inljoin(project, rightIn, cond_j, 10000); 
+    
+    // Go over the data through iterator
+    void *data = malloc(bufsize);
+    while(inljoin.getNextTuple(data) != QE_EOF)
+    {
+        int offset = 0;
+ 
+        // Print left.A
+        cout << "left.A " << *(int *)((char *)data + offset) << endl;
+        offset += sizeof(int);
+        
+        // Print left.C
+        cout << "left.C " << *(float *)((char *)data + offset) << endl;
+        offset += sizeof(float);
+        
+        // Print right.B
+        cout << "right.B " << *(int *)((char *)data + offset) << endl;
+        offset += sizeof(int);
+ 
+        // Print right.C
+        cout << "right.C " << *(float *)((char *)data + offset) << endl;
+        offset += sizeof(float);
+        
+        // Print right.D
+        cout << "right.D " << *(int *)((char *)data + offset) << endl;
+        offset += sizeof(int);
+        
+        memset(data, 0, bufsize);
+    }
+
+    ixManager->CloseIndex(ixLeftHandle);
+    ixManager->CloseIndex(ixRightHandle);
+    free(value.data);
+    free(data);
+    return;
+}
+
+
 //void extraTestCase_1()
 //{
 //    // Functions Tested
@@ -1050,12 +1050,12 @@ int main()
     testCase_4();
     testCase_5();
     testCase_6();
-    //testCase_7();
-    //testCase_8();
-    //testCase_9();
-    //testCase_10();
+    testCase_7();
+    testCase_8();
+    testCase_9();
+    testCase_10();
 
-    //// Extra Credit
+    // Extra Credit
     //extraTestCase_1();
     //extraTestCase_2();
     //extraTestCase_3();
