@@ -75,53 +75,8 @@ RC Filter::getNextTuple(void *filter_tuple) // {{{
              filter_tuple_ptr += sizeof(unsigned) + (*(unsigned *) filter_tuple_ptr);
     }
 
-    /* compare values, we don't care if we're comparing float with ints, etc. */
-    if (lhs_attr.type == TypeInt)
-    {
-        if (rhs_type == TypeReal)
-        {
-            int lhs = *(int *) lhs_value;
-            float rhs = *(float *) rhs_value;
-
-            if (QE_VALUE_COMP_OP(cond.op, lhs, rhs))
-                return 0;
-        }
-        else if (rhs_type == TypeInt)
-        {
-            int lhs = *(int *) lhs_value;
-            int rhs = *(int *) rhs_value;
-
-            if (QE_VALUE_COMP_OP(cond.op, lhs, rhs))
-                return 0;
-        }
-    }
-    else if (lhs_attr.type == TypeReal)
-    {
-        if (rhs_type == TypeReal)
-        {
-            float lhs = *(float *) lhs_value;
-            float rhs = *(float *) rhs_value;
-
-            if (QE_VALUE_COMP_OP(cond.op, lhs, rhs))
-                return 0;
-        }
-        else if (rhs_type == TypeInt)
-        {
-            float lhs = *(float *) lhs_value;
-            int rhs = *(int *) rhs_value;
-
-            if (QE_VALUE_COMP_OP(cond.op, lhs, rhs))
-                return 0;
-        }
-    }
-    else if (lhs_attr.type == TypeVarChar && rhs_attr.type == TypeVarChar)
-    {
-        string lhs(((char *) lhs_value) + sizeof(unsigned), (*(unsigned *) lhs_value));
-        string rhs(((char *) rhs_value) + sizeof(unsigned), (*(unsigned *) rhs_value));
-
-        if (QE_VALUE_COMP_OP(cond.op, lhs, rhs))
-            return 0;
-    }
+    if (qe_cmp_values(cond.op, lhs_value, rhs_value, lhs_attr.type, rhs_attr.type))
+        return 0;
     
     /* didnt find a match, continue searching. */
     return getNextTuple(filter_tuple);
