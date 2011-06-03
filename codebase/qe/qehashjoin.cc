@@ -7,7 +7,7 @@
 void HashJoin::clearHash() // {{{
 {
     /* make sure the map is clear, by deleting all the entries in the vector. */
-    map<qe_hash_join_key, vector<char *> >::const_iterator iter;
+    map<qe_hash_key, vector<char *> >::const_iterator iter;
 
     for(iter = hash.begin(); iter != hash.end(); iter++)
     {
@@ -25,7 +25,7 @@ RC HashJoin::hashLeftTable() // {{{
 
     while (!(rc = left_iter->getNextTuple(left_tuple)))
     {
-        qe_hash_join_key k;
+        qe_hash_key k;
 
         char lhs_value[PF_PAGE_SIZE];
 
@@ -46,7 +46,7 @@ RC HashJoin::hashLeftTable() // {{{
         else if (k.type ==TypeVarChar)
         {
             unsigned int lhs_value_size = qe_get_tuple_size(lhs_value, lhs_attr);
-            k.s_len = lhs_value_size;
+            k.s_len = lhs_value_size - sizeof(k.s_len);
             k.s = string(lhs_value + sizeof(k.s_len), k.s_len);
         }
 
@@ -101,7 +101,7 @@ RC HashJoin::getNextTuple(void *join_data) // {{{
     {
         char rhs_value[PF_PAGE_SIZE];
 
-        qe_hash_join_key k;
+        qe_hash_key k;
 
         /* get the next tuple from the right relation. */
         rc = right_iter->getNextTuple(right_tuple);
@@ -130,7 +130,7 @@ RC HashJoin::getNextTuple(void *join_data) // {{{
         else if (k.type ==TypeVarChar)
         {
             unsigned int rhs_value_size = qe_get_tuple_size(rhs_value, rhs_attr);
-            k.s_len = rhs_value_size;
+            k.s_len = rhs_value_size - sizeof(k.s_len);
             k.s = string(rhs_value + sizeof(k.s_len), k.s_len);
         }
 

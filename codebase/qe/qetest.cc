@@ -935,92 +935,92 @@ void extraTestCase_2()
     free(data);
     return;
 }
-//
-//
-//void extraTestCase_3()
-//{
-//    // Functions Tested
-//    // 1. TableScan
-//    // 2. Aggregate -- MIN
-//    cout << "****In Extra Test Case 3****" << endl;
-//    
-//    // Create TableScan
-//    TableScan *input = new TableScan(*rm, "left");
-//    
-//    // Create Aggregate
-//    Attribute aggAttr;
-//    aggAttr.name = "B";
-//    aggAttr.type = TypeInt;
-//    aggAttr.length = 4;
-//
-//    Attribute gAttr;
-//    gAttr.name = "C";
-//    gAttr.type = TypeReal;
-//    gAttr.length = 4;
-//    Aggregate agg(input, aggAttr, gAttr, MIN);
-//    
-//    void *data = malloc(bufsize);
-//    while(agg.getNextTuple(data) != QE_EOF)
-//    {
-//        int offset = 0;
-//        
-//        // Print left.C
-//        cout << "left.C " << *(float *)((char *)data + offset) << endl;
-//        offset += sizeof(float);
-//
-//        // Print left.B
-//        cout << "MIN(left.B) " << *(float *)((char *)data + offset) << endl;
-//        offset += sizeof(int);
-//
-//        memset(data, 0, bufsize);
-//    }
-//    
-//    free(data);
-//    return;
-//}
-//
-//
-//void extraTestCase_4()
-//{
-//    // Functions Tested
-//    // 1. TableScan
-//    // 2. Aggregate -- SUM
-//    cout << "****In Extra Test Case 4****" << endl;
-//    
-//    // Create TableScan
-//    TableScan *input = new TableScan(*rm, "right");
-//    
-//    // Create Aggregate
-//    Attribute aggAttr;
-//    aggAttr.name = "B";
-//    aggAttr.type = TypeInt;
-//    aggAttr.length = 4;
-//
-//    Attribute gAttr;
-//    gAttr.name = "C";
-//    gAttr.type = TypeReal;
-//    gAttr.length = 4;
-//    Aggregate agg(input, aggAttr, gAttr, SUM);
-//    
-//    void *data = malloc(bufsize);
-//    while(agg.getNextTuple(data) != QE_EOF)
-//    {
-//        int offset = 0;
-//        
-//        // Print right.C
-//        cout << "right.C " << *(float *)((char *)data + offset) << endl;
-//        offset += sizeof(float);
-//        
-//        // Print right.B
-//        cout << "SUM(right.B) " << *(float *)((char *)data + offset) << endl;
-//        offset += sizeof(int);
-//
-//        memset(data, 0, bufsize);
-//    }
-//    
-//    free(data);
-//    return;
-//}
+
+
+void extraTestCase_3()
+{
+    // Functions Tested
+    // 1. TableScan
+    // 2. Aggregate -- MIN
+    cout << "****In Extra Test Case 3****" << endl;
+    
+    // Create TableScan
+    TableScan *input = new TableScan(*rm, "left");
+    
+    // Create Aggregate
+    Attribute aggAttr;
+    aggAttr.name = "left.B";
+    aggAttr.type = TypeInt;
+    aggAttr.length = 4;
+
+    Attribute gAttr;
+    gAttr.name = "left.C";
+    gAttr.type = TypeReal;
+    gAttr.length = 4;
+    Aggregate agg(input, aggAttr, gAttr, MIN);
+    
+    void *data = malloc(bufsize);
+    while(agg.getNextTuple(data) != QE_EOF)
+    {
+        int offset = 0;
+        
+        // Print left.C
+        cout << "left.C " << *(float *)((char *)data + offset) << endl;
+        offset += sizeof(float);
+
+        // Print left.B
+        cout << "MIN(left.B) " << *(float *)((char *)data + offset) << endl;
+        offset += sizeof(int);
+
+        memset(data, 0, bufsize);
+    }
+    
+    free(data);
+    return;
+}
+
+
+void extraTestCase_4()
+{
+    // Functions Tested
+    // 1. TableScan
+    // 2. Aggregate -- SUM
+    cout << "****In Extra Test Case 4****" << endl;
+    
+    // Create TableScan
+    TableScan *input = new TableScan(*rm, "right");
+    
+    // Create Aggregate
+    Attribute aggAttr;
+    aggAttr.name = "right.B";
+    aggAttr.type = TypeInt;
+    aggAttr.length = 4;
+
+    Attribute gAttr;
+    gAttr.name = "right.C";
+    gAttr.type = TypeReal;
+    gAttr.length = 4;
+    Aggregate agg(input, aggAttr, gAttr, SUM);
+    
+    void *data = malloc(bufsize);
+    while(agg.getNextTuple(data) != QE_EOF)
+    {
+        int offset = 0;
+        
+        // Print right.C
+        cout << "right.C " << *(float *)((char *)data + offset) << endl;
+        offset += sizeof(float);
+        
+        // Print right.B
+        cout << "SUM(right.B) " << *(float *)((char *)data + offset) << endl;
+        offset += sizeof(int);
+
+        memset(data, 0, bufsize);
+    }
+    
+    free(data);
+    return;
+}
 
 
 int main() 
@@ -1058,8 +1058,8 @@ int main()
     // Extra Credit
     extraTestCase_1();
     extraTestCase_2();
-    //extraTestCase_3();
-    //extraTestCase_4();
+    extraTestCase_3();
+    extraTestCase_4();
 
     return 0;
 }

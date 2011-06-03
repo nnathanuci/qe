@@ -332,41 +332,41 @@ class INLJoin : public Iterator { // {{{
         void getAttributes(vector<Attribute> &attrs) const;
 }; // }}}
 
-    typedef struct qe_hash_join_key // {{{
-    {
-        AttrType type;
-        float float_v;
-        int int_v;
-        unsigned int s_len;
-        string s;
-    
-        qe_hash_join_key()
-        {
-            type = TypeInt;
-            float_v = 0;
-            int_v = 0;
-            s_len = 0;
-            s = "";
-        }
+typedef struct qe_hash_key // {{{
+{
+    AttrType type;
+    float float_v;
+    int int_v;
+    unsigned int s_len;
+    string s;
 
-        /* need to specify a weak comparison operator. */
-        bool operator<(const qe_hash_join_key &r) const
-        {
-            if (type == TypeInt && r.type == TypeInt)
-                 return (int_v < r.int_v);
-            else if (type == TypeInt && r.type == TypeReal)
-                 return (int_v < r.float_v);
-            if (type == TypeReal && r.type == TypeInt)
-                 return (float_v < r.int_v);
-            else if (type == TypeReal && r.type == TypeReal)
-                 return (float_v < r.float_v);
-            else if (type == TypeReal && r.type == TypeReal)
-                 return (s < r.s);
-    
-            /* any other combination is invalid. */
-            return 0;
-        }
-    } qe_hash_join_key; // }}}
+    qe_hash_key()
+    {
+        type = TypeInt;
+        float_v = 0;
+        int_v = 0;
+        s_len = 0;
+        s = "";
+    }
+
+    /* need to specify a weak comparison operator. */
+    bool operator<(const qe_hash_key &r) const
+    {
+        if (type == TypeInt && r.type == TypeInt)
+             return (int_v < r.int_v);
+        else if (type == TypeInt && r.type == TypeReal)
+             return (int_v < r.float_v);
+        if (type == TypeReal && r.type == TypeInt)
+             return (float_v < r.int_v);
+        else if (type == TypeReal && r.type == TypeReal)
+             return (float_v < r.float_v);
+        else if (type == TypeReal && r.type == TypeReal)
+             return (s < r.s);
+
+        /* any other combination is invalid. */
+        return 0;
+    }
+} qe_hash_key; // }}}
 
 class HashJoin : public Iterator { // {{{
     // Index Nested-Loop join operator
@@ -377,7 +377,7 @@ class HashJoin : public Iterator { // {{{
     vector<Attribute> left_attrs;
     vector<Attribute> right_attrs;
     vector<Attribute> join_attrs;
-    map<qe_hash_join_key, vector<char *> > hash;
+    map<qe_hash_key, vector<char *> > hash;
 
     Attribute lhs_attr;
     Attribute rhs_attr;
@@ -417,6 +417,9 @@ class Aggregate : public Iterator { // {{{
     float value;
     bool is_group_agg;
     bool is_finished;
+    /* the format of the pair<float,float> will be: <VALUE (SUM/MIN/MAX/COUNT), COUNT> */
+    map<qe_hash_key, pair<float,float> > hash;
+    map<qe_hash_key, pair<float,float> >::const_iterator hash_iter;
 
     public:
         Aggregate(Iterator *input,                              // Iterator of input R
@@ -436,6 +439,7 @@ class Aggregate : public Iterator { // {{{
         RC getNextTuple(void *data);
         RC getNextTupleAggOp(void *data);
         RC getNextTupleGroup(void *data);
+        RC hashGroupValues();
 
         // Please name the output attribute as aggregateOp(aggAttr)
         // E.g. Relation=rel, attribute=attr, aggregateOp=MAX
