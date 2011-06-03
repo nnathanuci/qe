@@ -473,67 +473,67 @@ void testCase_4()
 }
 
 
-//void testCase_5()
-//{
-//    // Functions Tested
-//    // 1. INLJoin -- on TypeChar Attribute
-//    cout << "****In Test Case 5****" << endl;
-//    
-//    // Prepare the iterator and condition
-//    TableScan *leftIn = new TableScan(*rm, "left");
-//    
-//    IX_IndexHandle ixRightHandle;
-//    ixManager->OpenIndex("right", "C", ixRightHandle);
-//    IndexScan *rightIn = new IndexScan(*rm, ixRightHandle, "right");
-//    
-//    Condition cond;
-//    cond.lhsAttr = "left.C";
-//    cond.op = EQ_OP;
-//    cond.bRhsIsAttr = true;
-//    cond.rhsAttr = "right.C";
-//    
-//    // Create INLJoin
-//    INLJoin inljoin(leftIn, rightIn, cond, 10000);
-//        
-//    // Go over the data through iterator
-//    void *data = malloc(bufsize);
-//    while(inljoin.getNextTuple(data) != QE_EOF)
-//    {
-//        int offset = 0;
-// 
-//        // Print left.A
-//        cout << "left.A " << *(int *)((char *)data + offset) << endl;
-//        offset += sizeof(int);
-//        
-//        // Print left.B
-//        cout << "left.B " << *(int *)((char *)data + offset) << endl;
-//        offset += sizeof(int);
-// 
-//        // Print left.C
-//        cout << "left.C " << *(float *)((char *)data + offset) << endl;
-//        offset += sizeof(float);
-//
-//        // Print right.B
-//        cout << "right.B " << *(int *)((char *)data + offset) << endl;
-//        offset += sizeof(int);
-// 
-//        // Print right.C
-//        cout << "right.C " << *(float *)((char *)data + offset) << endl;
-//        offset += sizeof(float);
-//        
-//        // Print right.D
-//        cout << "right.D " << *(int *)((char *)data + offset) << endl;
-//        offset += sizeof(int);
-//        
-//        memset(data, 0, bufsize);
-//    }
-//   
-//    ixManager->CloseIndex(ixRightHandle); 
-//    free(data);
-//    return;
-//}
-//
-//
+void testCase_5()
+{
+    // Functions Tested
+    // 1. INLJoin -- on TypeChar Attribute
+    cout << "****In Test Case 5****" << endl;
+    
+    // Prepare the iterator and condition
+    TableScan *leftIn = new TableScan(*rm, "left");
+    
+    IX_IndexHandle ixRightHandle;
+    ixManager->OpenIndex("right", "C", ixRightHandle);
+    IndexScan *rightIn = new IndexScan(*rm, ixRightHandle, "right");
+    
+    Condition cond;
+    cond.lhsAttr = "left.C";
+    cond.op = EQ_OP;
+    cond.bRhsIsAttr = true;
+    cond.rhsAttr = "right.C";
+
+    // Create INLJoin
+    INLJoin inljoin(leftIn, rightIn, cond, 10000);
+        
+    // Go over the data through iterator
+    void *data = malloc(bufsize);
+    while(inljoin.getNextTuple(data) != QE_EOF)
+    {
+        int offset = 0;
+ 
+        // Print left.A
+        cout << "left.A " << *(int *)((char *)data + offset) << endl;
+        offset += sizeof(int);
+        
+        // Print left.B
+        cout << "left.B " << *(int *)((char *)data + offset) << endl;
+        offset += sizeof(int);
+ 
+        // Print left.C
+        cout << "left.C " << *(float *)((char *)data + offset) << endl;
+        offset += sizeof(float);
+
+        // Print right.B
+        cout << "right.B " << *(int *)((char *)data + offset) << endl;
+        offset += sizeof(int);
+ 
+        // Print right.C
+        cout << "right.C " << *(float *)((char *)data + offset) << endl;
+        offset += sizeof(float);
+        
+        // Print right.D
+        cout << "right.D " << *(int *)((char *)data + offset) << endl;
+        offset += sizeof(int);
+        
+        memset(data, 0, bufsize);
+    }
+   
+    ixManager->CloseIndex(ixRightHandle); 
+    free(data);
+    return;
+}
+
+
 //void testCase_6()
 //{
 //    // Functions Tested
@@ -1048,7 +1048,7 @@ int main()
     testCase_2();
     testCase_3();
     testCase_4();
-    //testCase_5();
+    testCase_5();
     //testCase_6();
     //testCase_7();
     //testCase_8();
