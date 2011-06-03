@@ -230,7 +230,7 @@ class Filter : public Iterator { // {{{
     // Filter operator
     Iterator *iter;
     Condition cond;
-    vector<Attribute> attrs;
+    vector<Attribute> tuple_attrs;
 
     Attribute lhs_attr;
     Attribute rhs_attr;

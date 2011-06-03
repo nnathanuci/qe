@@ -4,17 +4,17 @@ Filter::Filter(Iterator *input, const Condition &condition) // {{{
 {
     iter = input;
     cond = condition;
-    attrs.clear();
+    tuple_attrs.clear();
 
     /* need the full set of attributes to do selection. */
-    getAttributes(attrs);
+    iter->getAttributes(tuple_attrs);
 
     /* get the attribute by name. */
-    getAttribute(attrs, condition.lhsAttr, lhs_attr);
+    getAttribute(tuple_attrs, condition.lhsAttr, lhs_attr);
 
     if (condition.bRhsIsAttr)
     {
-        getAttribute(attrs, condition.rhsAttr, rhs_attr);
+        getAttribute(tuple_attrs, condition.rhsAttr, rhs_attr);
         rhs_type = rhs_attr.type;
     }
     else
@@ -37,14 +37,14 @@ RC Filter::getNextTuple(void *filter_tuple) // {{{
     if ((rc = iter->getNextTuple(tuple)))
         return rc;
 
-    qe_get_tuple_element(tuple, attrs, lhs_attr.name, lhs_value);
+    qe_get_tuple_element(tuple, tuple_attrs, lhs_attr.name, lhs_value);
 
     if (cond.bRhsIsAttr)
-        qe_get_tuple_element(tuple, attrs, rhs_attr.name, rhs_value);
+        qe_get_tuple_element(tuple, tuple_attrs, rhs_attr.name, rhs_value);
 
     if (qe_cmp_values(cond.op, lhs_value, rhs_value, lhs_attr.type, rhs_type))
     {
-        unsigned int tuple_size = qe_get_tuple_size(tuple, attrs);
+        unsigned int tuple_size = qe_get_tuple_size(tuple, tuple_attrs);
         memcpy(filter_tuple, tuple, tuple_size);
         return 0;
     }
