@@ -23,7 +23,7 @@ NLJoin::NLJoin(Iterator *leftIn, TableScan *rightIn, const Condition &condition,
 
 RC NLJoin::getNextTuple(void *join_data) // {{{
 {
-    unsigned char right_tuple[PF_PAGE_SIZE];
+    char right_tuple[PF_PAGE_SIZE];
 
     RC rc;
 
@@ -49,7 +49,7 @@ RC NLJoin::getNextTuple(void *join_data) // {{{
 
     while (!(rc = right_iter->getNextTuple(right_tuple)))
     {
-        unsigned char rhs_value[PF_PAGE_SIZE];
+        char rhs_value[PF_PAGE_SIZE];
 
         /* get the value associated with the join attribute. */
         qe_get_tuple_element(right_tuple, right_attrs, rhs_attr.name, rhs_value);
