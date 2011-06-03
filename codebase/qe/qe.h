@@ -236,7 +236,7 @@ class Filter : public Iterator { // {{{
     Attribute rhs_attr;
     AttrType rhs_type;
 
-    unsigned char rhs_value[PF_PAGE_SIZE];
+    char rhs_value[PF_PAGE_SIZE];
 
     public:
         Filter(Iterator *input,                         // Iterator of input R
@@ -432,7 +432,7 @@ class Aggregate : public Iterator { // {{{
 }; // }}}
 
 // debug functions
-void qe_getAttribute(string &name, vector<Attribute> &attrs, Attribute &a);
+void qe_get_attribute(string &name, vector<Attribute> &attrs, Attribute &a);
 void qe_dump_condition(Condition &c, vector<Attribute> &attrs);
 void qe_dump_attribute(Attribute &a);
 void qe_dump_attributes(vector<Attribute> &attrs);
