@@ -3,7 +3,7 @@
 
 using namespace std;
 
-void qe_dump_tuple_element(const void *data, const Attribute &a)
+void qe_dump_tuple_element(const void *data, const Attribute &a) // {{{
 {
     char *data_ptr = (char *) data;
 
@@ -26,8 +26,9 @@ void qe_dump_tuple_element(const void *data, const Attribute &a)
 
     cout << ")" << endl;
 
-}
-void qe_dump_tuple(const void *data, const vector<Attribute> &attrs)
+} // }}}
+
+void qe_dump_tuple(const void *data, const vector<Attribute> &attrs) // {{{
 {
     unsigned char *data_ptr = (unsigned char *) data;
 
@@ -78,9 +79,9 @@ void qe_dump_tuple(const void *data, const vector<Attribute> &attrs)
     }
 
     cout << ")" << endl;
-}
+} // }}}
 
-void qe_dump_attribute(Attribute &a)
+void qe_dump_attribute(Attribute &a) // {{{
 {
     cout << "name: " << a.name << " type: ";
 
@@ -92,9 +93,9 @@ void qe_dump_attribute(Attribute &a)
         cout << "char  ";
 
     cout << " len: " << a.length << endl;
-}
+} // }}}
 
-void qe_dump_attributes(vector<Attribute> &attrs)
+void qe_dump_attributes(vector<Attribute> &attrs) // {{{
 {
     cout << "[Begin Attributes]" << endl;
 
@@ -105,8 +106,9 @@ void qe_dump_attributes(vector<Attribute> &attrs)
     }
 
     cout << "[End Attributes]" << endl;
-}
-void qe_getAttribute(string &name, vector<Attribute> &attrs, Attribute &a)
+} // }}}
+
+void qe_getAttribute(string &name, vector<Attribute> &attrs, Attribute &a) // {{{
 {
     for (unsigned int i = 0; i < attrs.size(); i++)
     {
@@ -116,9 +118,9 @@ void qe_getAttribute(string &name, vector<Attribute> &attrs, Attribute &a)
              return;
         }
     }
-}
+} // }}}
 
-void qe_dump_condition(Condition &c, vector<Attribute> &attrs)
+void qe_dump_condition(Condition &c, vector<Attribute> &attrs) // {{{
 {
     Attribute lhs;
     qe_getAttribute(c.lhsAttr, attrs, lhs);
@@ -194,9 +196,9 @@ void qe_dump_condition(Condition &c, vector<Attribute> &attrs)
     }
 
     cout << "[End Condition]" << endl;
-}
+} // }}}
 
-unsigned qe_get_tuple_size(const void *tuple, const vector<Attribute> &attrs)
+unsigned qe_get_tuple_size(const void *tuple, const vector<Attribute> &attrs) // {{{
 {
     unsigned int offset;
     char *tuple_ptr = (char *) tuple;
@@ -214,9 +216,9 @@ unsigned qe_get_tuple_size(const void *tuple, const vector<Attribute> &attrs)
     }
 
     return offset;
-}
+} // }}}
 
-unsigned qe_get_tuple_size(const void *tuple, const Attribute &attr)
+unsigned qe_get_tuple_size(const void *tuple, const Attribute &attr) // {{{
 {
     unsigned int offset;
     char *tuple_ptr = (char *) tuple;
@@ -231,9 +233,9 @@ unsigned qe_get_tuple_size(const void *tuple, const Attribute &attr)
         offset += sizeof(unsigned) + (*(unsigned *) ((char *) tuple_ptr + offset));
 
     return offset;
-}
+} // }}}
 
-void qe_get_tuple_element(const void *tuple, const vector<Attribute> &attrs, const string &name, void *value)
+void qe_get_tuple_element(const void *tuple, const vector<Attribute> &attrs, const string &name, void *value) // {{{
 {
     char *tuple_ptr = (char *) tuple;
 
@@ -262,9 +264,9 @@ void qe_get_tuple_element(const void *tuple, const vector<Attribute> &attrs, con
                 offset += sizeof(unsigned) + (*(unsigned *) ((char *) tuple_ptr + offset));
         }
     }
-}
+} // }}}
 
-int qe_cmp_values(const CompOp &op, const void *lhs_value, const void *rhs_value, const AttrType &lhs_attr_type, const AttrType &rhs_attr_type)
+int qe_cmp_values(const CompOp &op, const void *lhs_value, const void *rhs_value, const AttrType &lhs_attr_type, const AttrType &rhs_attr_type) // {{{
 {
         char *left_value = (char *) lhs_value;
         char *right_value = (char *) rhs_value;
@@ -309,7 +311,7 @@ int qe_cmp_values(const CompOp &op, const void *lhs_value, const void *rhs_value
             string rhs(((char *) right_value) + sizeof(unsigned), (*(unsigned *) right_value));
      
             return (QE_VALUE_COMP_OP(op, lhs, rhs));
-        } // }}}
+        }
 
         return 0;
-}
+} // }}}
