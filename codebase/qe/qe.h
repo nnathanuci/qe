@@ -372,5 +372,7 @@ void qe_dump_condition(Condition &c, vector<Attribute> &attrs);
 void qe_dump_attribute(Attribute &a);
 void qe_dump_attributes(vector<Attribute> &attrs);
 void qe_dump_tuple(const void *data, const vector<Attribute> &attrs);
+unsigned qe_get_tuple_size(const void *tuple, const vector<Attribute> &attrs);
+void qe_get_tuple_element(const void *tuple, const vector<Attribute> &attrs, const string &name, void *value);
 
 #endif

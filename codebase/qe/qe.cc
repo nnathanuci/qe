@@ -195,3 +195,104 @@ void qe_dump_condition(Condition &c, vector<Attribute> &attrs)
 
     cout << "[End Condition]" << endl;
 }
+
+unsigned qe_get_tuple_size(const void *tuple, const vector<Attribute> &attrs)
+{
+    unsigned int offset;
+    char *tuple_ptr = (char *) tuple;
+
+    offset = 0;
+
+    for (unsigned int i = 0; i < attrs.size(); i++)
+    {
+        if (attrs[i].type == TypeInt)
+            offset += sizeof(int);
+        else if (attrs[i].type == TypeReal)
+            offset += sizeof(float);
+        else if (attrs[i].type == TypeVarChar)
+            offset += sizeof(unsigned) + (*(unsigned *) ((char *) tuple_ptr + offset));
+    }
+
+    return offset;
+}
+
+void qe_get_tuple_element(const void *tuple, const vector<Attribute> &attrs, const string &name, void *value)
+{
+    char *tuple_ptr = (char *) tuple;
+
+    for (unsigned int offset = 0, i = 0; i < attrs.size(); i++)
+    {
+        if (attrs[i].name == name)
+        {
+            /* copy in the value to value. */
+            if (attrs[i].type == TypeInt)
+                memcpy(value, tuple_ptr + offset, sizeof(int));
+            else if (attrs[i].type == TypeReal)
+                memcpy(value, tuple_ptr + offset, sizeof(float));
+            else if (attrs[i].type == TypeVarChar)
+                memcpy(value, tuple_ptr + offset, sizeof(unsigned) + (*(unsigned *) ((char *) tuple_ptr) + offset));
+        
+            /* we found the attribute, we're done. */
+            return;
+        }
+        else
+        {
+            if (attrs[i].type == TypeInt)
+                offset += sizeof(int);
+            else if (attrs[i].type == TypeReal)
+                offset += sizeof(float);
+            else if (attrs[i].type == TypeVarChar)
+                offset += sizeof(unsigned) + (*(unsigned *) ((char *) tuple_ptr + offset));
+        }
+    }
+}
+
+int qe_cmp_values(const CompOp &op, const void *lhs_value, const void *rhs_value, const AttrType &lhs_attr_type, const AttrType &rhs_attr_type)
+{
+        char *left_value = (char *) lhs_value;
+        char *right_value = (char *) rhs_value;
+
+        if (lhs_attr_type == TypeInt)
+        {
+            if (rhs_attr_type == TypeReal)
+            {
+                int lhs = *(int *) left_value;
+                float rhs = *(float *) right_value;
+     
+                return (QE_VALUE_COMP_OP(op, lhs, rhs));
+            }
+            else if (rhs_attr_type == TypeInt)
+            {
+                int lhs = *(int *) left_value;
+                int rhs = *(int *) right_value;
+     
+                return (QE_VALUE_COMP_OP(op, lhs, rhs));
+            }
+        }
+        else if (lhs_attr_type == TypeReal)
+        {
+            if (rhs_attr_type == TypeReal)
+            {
+                float lhs = *(float *) left_value;
+                float rhs = *(float *) right_value;
+     
+                return (QE_VALUE_COMP_OP(op, lhs, rhs));
+            }
+            else if (rhs_attr_type == TypeInt)
+            {
+                float lhs = *(float *) left_value;
+                int rhs = *(int *) right_value;
+     
+                return (QE_VALUE_COMP_OP(op, lhs, rhs));
+            }
+        }
+        else if (lhs_attr_type == TypeVarChar && rhs_attr_type == TypeVarChar)
+        {
+            string lhs(((char *) left_value) + sizeof(unsigned), (*(unsigned *) left_value));
+            string rhs(((char *) right_value) + sizeof(unsigned), (*(unsigned *) right_value));
+     
+            return (QE_VALUE_COMP_OP(op, lhs, rhs));
+        } // }}}
+
+        return 0;
+}
