@@ -19,9 +19,6 @@ NLJoin::NLJoin(Iterator *leftIn, TableScan *rightIn, const Condition &condition,
 
     /* signal to pick up the next tuple from lhs relation. */
     next_left_tuple_ready = true;
-
-    // qe_dump_condition(cond, join_attrs); /* XXX: debug */
-
 } // }}}
 
 RC NLJoin::getNextTuple(void *join_data) // {{{
