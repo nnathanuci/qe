@@ -30,7 +30,7 @@ void qe_dump_tuple_element(const void *data, const Attribute &a) // {{{
 
 void qe_dump_tuple(const void *data, const vector<Attribute> &attrs) // {{{
 {
-    unsigned char *data_ptr = (unsigned char *) data;
+    char *data_ptr = (char *) data;
 
     //cout << "[Begin Data Dump]" << endl;
     //for (unsigned int i = 0; i < attrs.size(); i++)
@@ -108,7 +108,7 @@ void qe_dump_attributes(vector<Attribute> &attrs) // {{{
     cout << "[End Attributes]" << endl;
 } // }}}
 
-void qe_getAttribute(string &name, vector<Attribute> &attrs, Attribute &a) // {{{
+void qe_get_attribute(string &name, vector<Attribute> &attrs, Attribute &a) // {{{
 {
     for (unsigned int i = 0; i < attrs.size(); i++)
     {
@@ -123,7 +123,7 @@ void qe_getAttribute(string &name, vector<Attribute> &attrs, Attribute &a) // {{
 void qe_dump_condition(Condition &c, vector<Attribute> &attrs) // {{{
 {
     Attribute lhs;
-    qe_getAttribute(c.lhsAttr, attrs, lhs);
+    qe_get_attribute(c.lhsAttr, attrs, lhs);
 
     cout << "[Begin Condition]" << endl;
     cout << "  left attr: " << c.lhsAttr << endl;
@@ -161,7 +161,7 @@ void qe_dump_condition(Condition &c, vector<Attribute> &attrs) // {{{
     if (c.bRhsIsAttr)
     {
         Attribute rhs;
-        qe_getAttribute(c.rhsAttr, attrs, rhs);
+        qe_get_attribute(c.rhsAttr, attrs, rhs);
 
         cout << "  left attr: " << c.rhsAttr << endl;
 
