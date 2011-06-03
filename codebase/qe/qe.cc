@@ -218,21 +218,26 @@ unsigned qe_get_tuple_size(const void *tuple, const vector<Attribute> &attrs) //
     return offset;
 } // }}}
 
-unsigned qe_get_tuple_size(const void *tuple, const Attribute &attr) // {{{
+unsigned qe_get_tuple_size(const void *tuple, const AttrType &t) // {{{
 {
     unsigned int offset;
     char *tuple_ptr = (char *) tuple;
 
     offset = 0;
 
-    if (attr.type == TypeInt)
+    if (t == TypeInt)
         offset += sizeof(int);
-    else if (attr.type == TypeReal)
+    else if (t == TypeReal)
         offset += sizeof(float);
-    else if (attr.type == TypeVarChar)
+    else if (t == TypeVarChar)
         offset += sizeof(unsigned) + (*(unsigned *) ((char *) tuple_ptr + offset));
 
     return offset;
+} // }}}
+
+unsigned qe_get_tuple_size(const void *tuple, const Attribute &attr) // {{{
+{
+    return qe_get_tuple_size(tuple, attr.type);
 } // }}}
 
 void qe_get_tuple_element(const void *tuple, const vector<Attribute> &attrs, const string &name, void *value) // {{{
@@ -266,19 +271,6 @@ void qe_get_tuple_element(const void *tuple, const vector<Attribute> &attrs, con
     }
 } // }}}
 
-void qe_get_tuple_element(const void *tuple, const Attribute &a, void *value) // {{{
-{
-    char *tuple_ptr = (char *) tuple;
-
-    /* copy in the value to value. */
-    if (a.type == TypeInt)
-        memcpy(value, tuple_ptr, sizeof(int));
-    else if (a.type == TypeReal)
-        memcpy(value, tuple_ptr, sizeof(float));
-    else if (a.type == TypeVarChar)
-        memcpy(value, tuple_ptr, sizeof(unsigned) + (*(unsigned *) ((char *) tuple_ptr)));
-} // }}}
-
 void qe_get_tuple_element(const void *tuple, const AttrType &t, void *value) // {{{
 {
     char *tuple_ptr = (char *) tuple;
@@ -291,6 +283,12 @@ void qe_get_tuple_element(const void *tuple, const AttrType &t, void *value) // 
     else if (t == TypeVarChar)
         memcpy(value, tuple_ptr, sizeof(unsigned) + (*(unsigned *) ((char *) tuple_ptr)));
 } // }}}
+
+void qe_get_tuple_element(const void *tuple, const Attribute &a, void *value) // {{{
+{
+    qe_get_tuple_element(tuple, a.type, value);
+} // }}}
+
 
 int qe_cmp_values(const CompOp &op, const void *lhs_value, const void *rhs_value, const AttrType &lhs_attr_type, const AttrType &rhs_attr_type) // {{{
 {
