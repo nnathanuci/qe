@@ -4,7 +4,7 @@ include ../makefile.inc
 all: libqe.a qetest qefilter_test qeproject_test
 
 # lib file dependencies
-libqe.a: libqe.a(qe.o qefilter.o qeproject.o qenljoin.o qeinljoin.o qehashjoin.o)  # and possibly other .o files
+libqe.a: libqe.a(qe.o qefilter.o qeproject.o qenljoin.o qeinljoin.o qehashjoin.o qeaggregate.o)  # and possibly other .o files
 
 # c file dependencies
 qe.o: qe.h
@@ -18,6 +18,8 @@ qenljoin.o: qe.h
 qeinljoin.o: qe.h
 
 qehashjoin.o: qe.h
+
+qeaggregate.o: qe.h
 
 qetest.o: qe.h
 

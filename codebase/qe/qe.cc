@@ -294,7 +294,6 @@ void qe_get_tuple_element(const void *tuple, const Attribute &a, void *value) //
     qe_get_tuple_element(tuple, a.type, value);
 } // }}}
 
-
 int qe_cmp_values(const CompOp &op, const void *lhs_value, const void *rhs_value, const AttrType &lhs_attr_type, const AttrType &rhs_attr_type) // {{{
 {
         char *left_value = (char *) lhs_value;

@@ -407,8 +407,18 @@ class HashJoin : public Iterator { // {{{
         void getAttributes(vector<Attribute> &attrs) const;
 }; // }}}
 
+typedef union aggregate_value { int i; float f; } aggregate_value;
+
 class Aggregate : public Iterator { // {{{
     // Aggregation operator
+    Iterator *iter;
+    Attribute agg_attr;
+    Attribute group_attr;
+    vector<Attribute> attrs;
+    AggregateOp agg_op;
+    float value;
+    bool is_group_agg;
+
     public:
         Aggregate(Iterator *input,                              // Iterator of input R
                   Attribute aggAttr,                            // The attribute over which we are computing an aggregate
@@ -424,7 +434,10 @@ class Aggregate : public Iterator { // {{{
 
         ~Aggregate();
         
-        RC getNextTuple(void *data) {return QE_EOF;};
+        RC getNextTuple(void *data);
+        RC getNextTupleAggOp(void *data);
+        RC getNextTupleGroup(void *data);
+
         // Please name the output attribute as aggregateOp(aggAttr)
         // E.g. Relation=rel, attribute=attr, aggregateOp=MAX
         // output attrname = "MAX(rel.attr) (e.g. "MAX(emptable.empid)"))"
