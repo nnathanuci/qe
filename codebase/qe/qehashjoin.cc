@@ -21,7 +21,7 @@ void HashJoin::clearHash() // {{{
 RC HashJoin::hashLeftTable() // {{{
 {
     RC rc;
-    unsigned char left_tuple[PF_PAGE_SIZE];
+    char left_tuple[PF_PAGE_SIZE];
 
     while (!(rc = left_iter->getNextTuple(left_tuple)))
     {
