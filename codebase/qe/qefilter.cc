@@ -49,13 +49,7 @@ RC Filter::getNextTuple(void *filter_tuple) // {{{
          {
               found_lhs = true;
 
-              /* make copy of lhs value for comparison. */
-              if (attrs[i].type == TypeInt)
-                   memcpy(lhs_value, filter_tuple_ptr, sizeof(int));
-              else if (attrs[i].type == TypeReal)
-                   memcpy(lhs_value, filter_tuple_ptr, sizeof(float));
-              else if (attrs[i].type == TypeVarChar)
-                   memcpy(lhs_value, filter_tuple_ptr, sizeof(unsigned) + (*(unsigned *) filter_tuple_ptr));
+              qe_get_tuple_element(filter_tuple, attrs, lhs_attr.name, lhs_value);
 
               /* if rhs is just a value, or we've found the value, then we're done with checking the filter_tuple. */
               if (!cond.bRhsIsAttr || found_rhs)
@@ -65,13 +59,7 @@ RC Filter::getNextTuple(void *filter_tuple) // {{{
          {
              found_rhs = true;
 
-              /* make copy of rhs value for comparison. */
-              if (attrs[i].type == TypeInt)
-                   memcpy(rhs_value, filter_tuple_ptr, sizeof(int));
-              else if (attrs[i].type == TypeReal)
-                   memcpy(rhs_value, filter_tuple_ptr, sizeof(float));
-              else if (attrs[i].type == TypeVarChar)
-                   memcpy(rhs_value, filter_tuple_ptr, sizeof(unsigned) + (*(unsigned *) filter_tuple_ptr));
+             qe_get_tuple_element(filter_tuple, attrs, rhs_attr.name, rhs_value);
 
              /* if we've found lhs value, then we're done. */
              if (found_lhs)
