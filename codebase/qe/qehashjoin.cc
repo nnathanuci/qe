@@ -26,6 +26,7 @@ RC HashJoin::hashLeftTable() // {{{
     while (!(rc = left_iter->getNextTuple(left_tuple)))
     {
         qe_hash_join_key k;
+
         char lhs_value[PF_PAGE_SIZE];
 
         /* get the value associated with the join attribute. */
@@ -34,22 +35,21 @@ RC HashJoin::hashLeftTable() // {{{
         k.type = lhs_attr.type;
 
         /* copy in key value to hash key. */
-        if (lhs_attr.type == TypeInt)
+        if (k.type == TypeInt)
         {
             k.int_v = *(int *) lhs_value;
         }
-        else if (lhs_attr.type ==TypeReal)
+        else if (k.type ==TypeReal)
         {
             k.float_v = *(float *) lhs_value;
         }
-        else if (lhs_attr.type ==TypeVarChar)
+        else if (k.type ==TypeVarChar)
         {
             unsigned int lhs_value_size = qe_get_tuple_size(lhs_value, lhs_attr);
             k.s_len = lhs_value_size;
             k.s = string(lhs_value + sizeof(k.s_len), k.s_len);
         }
 
-        /* key already exists in map (a duplicate value). */
         {
             unsigned int left_tuple_size = qe_get_tuple_size(left_tuple, left_attrs);
             char *p;
@@ -59,8 +59,7 @@ RC HashJoin::hashLeftTable() // {{{
 
             memcpy(p, left_tuple, left_tuple_size);
 
-            /* instantiate a vector if necessary (otherwise this will do nothing). */
-            hash[k];
+            /* this will automatically instantiate a vector if necessary (upon indexing on key for first time). */
             hash[k].push_back(p);
         }
     }
@@ -101,6 +100,7 @@ RC HashJoin::getNextTuple(void *join_data) // {{{
     if(!left_values_read) // {{{
     {
         char rhs_value[PF_PAGE_SIZE];
+
         qe_hash_join_key k;
 
         /* get the next tuple from the right relation. */
@@ -110,8 +110,6 @@ RC HashJoin::getNextTuple(void *join_data) // {{{
         if(rc)
             return rc;
 
-        //qe_dump_tuple(right_tuple, right_attrs); // XXX: debug
-    
         /* calculate size of right tuple. */
         right_size = qe_get_tuple_size(right_tuple, right_attrs);
 
@@ -121,15 +119,15 @@ RC HashJoin::getNextTuple(void *join_data) // {{{
         k.type = rhs_attr.type;
 
         /* copy in key value to hash key. */
-        if (rhs_attr.type == TypeInt)
+        if (k.type == TypeInt)
         {
             k.int_v = *(int *) rhs_value;
         }
-        else if (rhs_attr.type ==TypeReal)
+        else if (k.type ==TypeReal)
         {
             k.float_v = *(float *) rhs_value;
         }
-        else if (rhs_attr.type ==TypeVarChar)
+        else if (k.type ==TypeVarChar)
         {
             unsigned int rhs_value_size = qe_get_tuple_size(rhs_value, rhs_attr);
             k.s_len = rhs_value_size;
@@ -138,7 +136,7 @@ RC HashJoin::getNextTuple(void *join_data) // {{{
 
         /* no vector associated with this key, move on to the next tuple. */
         if (!hash.count(k))
-            getNextTuple(join_data);
+            return getNextTuple(join_data);
 
         /* we found something to join on, let's carry on. */
         values = &(hash[k]);
@@ -148,30 +146,24 @@ RC HashJoin::getNextTuple(void *join_data) // {{{
         next_index = 0;
     } // }}}
 
-    if (left_values_read)
+    if (left_values_read && (next_index < values->size()))
     {
-         /* no more values to read, we need to get another right tuple. */
-         if (next_index >= values->size())
-         {
-             left_values_read = false;
-             values = NULL;
-             return getNextTuple(join_data);
-         }
-
-         /* join against the next tuple in the sequence, and return the joined tuples. */
-         char *next_left_tuple = (*values)[next_index];
-         unsigned int left_size = qe_get_tuple_size(next_left_tuple, left_attrs);
-         memcpy((char *) join_data, next_left_tuple, left_size);
-         memcpy((char *) join_data + left_size, right_tuple, right_size);
-
-         /* increment since we're done with this value. */
-         next_index++;
-
-         /* return the tuple. */
-         return 0;
+        /* join against the next tuple in the sequence, and return the joined tuples. */
+        char *next_left_tuple = (*values)[next_index];
+        unsigned int left_size = qe_get_tuple_size(next_left_tuple, left_attrs);
+        memcpy((char *) join_data, next_left_tuple, left_size);
+        memcpy((char *) join_data + left_size, right_tuple, right_size);
+        
+        /* increment since we're done with this value. */
+        next_index++;
+        
+        /* return the joined tuple. */
+        return 0;
     }
 
-    /* if we come here, then we found nothing to join on. */
+    /* only come here if no more values to read, we need to get the next right tuple. */
+    left_values_read = false;
+    values = NULL;
     return getNextTuple(join_data);
 } // }}}
 
