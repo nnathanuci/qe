@@ -374,5 +374,6 @@ void qe_dump_attributes(vector<Attribute> &attrs);
 void qe_dump_tuple(const void *data, const vector<Attribute> &attrs);
 unsigned qe_get_tuple_size(const void *tuple, const vector<Attribute> &attrs);
 void qe_get_tuple_element(const void *tuple, const vector<Attribute> &attrs, const string &name, void *value);
-
+int qe_cmp_values(const CompOp &op, const void *lhs_value, const void *rhs_value, const AttrType &lhs_attr_type, const AttrType &rhs_attr_type);
+unsigned qe_get_tuple_size(const void *tuple, const Attribute &attr);
 #endif

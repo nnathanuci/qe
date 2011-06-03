@@ -216,6 +216,23 @@ unsigned qe_get_tuple_size(const void *tuple, const vector<Attribute> &attrs)
     return offset;
 }
 
+unsigned qe_get_tuple_size(const void *tuple, const Attribute &attr)
+{
+    unsigned int offset;
+    char *tuple_ptr = (char *) tuple;
+
+    offset = 0;
+
+    if (attr.type == TypeInt)
+        offset += sizeof(int);
+    else if (attr.type == TypeReal)
+        offset += sizeof(float);
+    else if (attr.type == TypeVarChar)
+        offset += sizeof(unsigned) + (*(unsigned *) ((char *) tuple_ptr + offset));
+
+    return offset;
+}
+
 void qe_get_tuple_element(const void *tuple, const vector<Attribute> &attrs, const string &name, void *value)
 {
     char *tuple_ptr = (char *) tuple;
