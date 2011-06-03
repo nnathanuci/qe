@@ -879,62 +879,62 @@ void testCase_10()
 }
 
 
-//void extraTestCase_1()
-//{
-//    // Functions Tested
-//    // 1. TableScan
-//    // 2. Aggregate -- MAX
-//    cout << "****In Extra Test Case 1****" << endl;
-//    
-//    // Create TableScan
-//    TableScan *input = new TableScan(*rm, "left");
-//    
-//    // Create Aggregate
-//    Attribute aggAttr;
-//    aggAttr.name = "B";
-//    aggAttr.type = TypeInt;
-//    aggAttr.length = 4;   
-//    Aggregate agg(input, aggAttr, MAX);
-//    
-//    void *data = malloc(bufsize);
-//    while(agg.getNextTuple(data) != QE_EOF)
-//    {
-//        cout << "MAX(left.B) " << *(float *)data << endl;
-//        memset(data, 0, sizeof(float));
-//    }
-//    
-//    free(data);
-//    return;
-//}
-//
-//
-//void extraTestCase_2()
-//{
-//    // Functions Tested
-//    // 1. TableScan
-//    // 2. Aggregate -- AVG
-//    cout << "****In Extra Test Case 2****" << endl;
-//    
-//    // Create TableScan
-//    TableScan *input = new TableScan(*rm, "right");
-//    
-//    // Create Aggregate
-//    Attribute aggAttr;
-//    aggAttr.name = "B";
-//    aggAttr.type = TypeInt;
-//    aggAttr.length = 4;   
-//    Aggregate agg(input, aggAttr, AVG);
-//    
-//    void *data = malloc(bufsize);
-//    while(agg.getNextTuple(data) != QE_EOF)
-//    {
-//        cout << "AVG(right.B) " << *(float *)data << endl;
-//        memset(data, 0, sizeof(float));
-//    }
-//    
-//    free(data);
-//    return;
-//}
+void extraTestCase_1()
+{
+    // Functions Tested
+    // 1. TableScan
+    // 2. Aggregate -- MAX
+    cout << "****In Extra Test Case 1****" << endl;
+    
+    // Create TableScan
+    TableScan *input = new TableScan(*rm, "left");
+    
+    // Create Aggregate
+    Attribute aggAttr;
+    aggAttr.name = "left.B";
+    aggAttr.type = TypeInt;
+    aggAttr.length = 4;   
+    Aggregate agg(input, aggAttr, MAX);
+    
+    void *data = malloc(bufsize);
+    while(agg.getNextTuple(data) != QE_EOF)
+    {
+        cout << "MAX(left.B) " << *(float *)data << endl;
+        memset(data, 0, sizeof(float));
+    }
+    
+    free(data);
+    return;
+}
+
+
+void extraTestCase_2()
+{
+    // Functions Tested
+    // 1. TableScan
+    // 2. Aggregate -- AVG
+    cout << "****In Extra Test Case 2****" << endl;
+    
+    // Create TableScan
+    TableScan *input = new TableScan(*rm, "right");
+    
+    // Create Aggregate
+    Attribute aggAttr;
+    aggAttr.name = "right.B";
+    aggAttr.type = TypeInt;
+    aggAttr.length = 4;   
+    Aggregate agg(input, aggAttr, AVG);
+    
+    void *data = malloc(bufsize);
+    while(agg.getNextTuple(data) != QE_EOF)
+    {
+        cout << "AVG(right.B) " << *(float *)data << endl;
+        memset(data, 0, sizeof(float));
+    }
+    
+    free(data);
+    return;
+}
 //
 //
 //void extraTestCase_3()
@@ -1056,8 +1056,8 @@ int main()
     testCase_10();
 
     // Extra Credit
-    //extraTestCase_1();
-    //extraTestCase_2();
+    extraTestCase_1();
+    extraTestCase_2();
     //extraTestCase_3();
     //extraTestCase_4();
 

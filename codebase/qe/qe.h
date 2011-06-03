@@ -407,17 +407,16 @@ class HashJoin : public Iterator { // {{{
         void getAttributes(vector<Attribute> &attrs) const;
 }; // }}}
 
-typedef union aggregate_value { int i; float f; } aggregate_value;
-
 class Aggregate : public Iterator { // {{{
     // Aggregation operator
     Iterator *iter;
     Attribute agg_attr;
     Attribute group_attr;
-    vector<Attribute> attrs;
+    vector<Attribute> tuple_attrs;
     AggregateOp agg_op;
     float value;
     bool is_group_agg;
+    bool is_finished;
 
     public:
         Aggregate(Iterator *input,                              // Iterator of input R
