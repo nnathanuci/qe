@@ -9,8 +9,8 @@ Project::Project(Iterator *input, const vector<string> &attrNames) // {{{
 
 RC Project::getNextTuple(void *project_tuple) // {{{
 {
-    unsigned char *project_tuple_ptr = (unsigned char *) project_tuple;
-    unsigned char tuple[PF_PAGE_SIZE];
+    char *project_tuple_ptr = (char *) project_tuple;
+    char tuple[PF_PAGE_SIZE];
 
     RC rc;
 
@@ -21,7 +21,7 @@ RC Project::getNextTuple(void *project_tuple) // {{{
     {
         Attribute a;
 
-        qe_getAttribute(attr_names[i], attrs, a);
+        qe_get_attribute(attr_names[i], attrs, a);
         qe_get_tuple_element(tuple, attrs, attr_names[i], project_tuple_ptr);
         project_tuple_ptr += qe_get_tuple_size(project_tuple_ptr, a);
     }
