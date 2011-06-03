@@ -17,51 +17,13 @@ RC Project::getNextTuple(void *project_tuple) // {{{
     if (rc = iter->getNextTuple(tuple))
         return rc;
 
-    /* need to pack the attributes in the order of the names, and so we need to enumerate the attribute vector for each name. */
     for (unsigned int i=0; i < attr_names.size(); i++)
     {
-        unsigned int offset = 0;
+        Attribute a;
 
-        for (unsigned int j=0; j < attrs.size(); j++)
-        {
-             if (attr_names[i] == attrs[j].name)
-             {
-                  /* projected attribute is appended to the tuple that is returned (project_tuple) */
-
-                  if (attrs[j].type == TypeInt)
-                  {
-                       memcpy(project_tuple_ptr, (char *) tuple + offset, sizeof(int));
-                       project_tuple_ptr += sizeof(int);
-                  }
-                  else if (attrs[j].type == TypeReal)
-                  {
-                       memcpy(project_tuple_ptr, (char *) tuple + offset, sizeof(float));
-                       project_tuple_ptr += sizeof(float);
-                  }
-                  else if (attrs[j].type == TypeVarChar)
-                  {
-                       unsigned int len = (*(unsigned *) ((char *) tuple + offset));
-                       memcpy(project_tuple_ptr, (char *) tuple + offset, sizeof(unsigned) + len);
-                       project_tuple_ptr += sizeof(unsigned);
-                       offset += sizeof(unsigned);
-                       memcpy(project_tuple_ptr, (char *) tuple + offset, len);
-                       project_tuple_ptr += len;
-                  }
-
-                  /* finished with this attribute, scan for the next attribute/name pair. */
-                  break;
-             }
-             else
-             {
-                  /* skip the attribute since it doesnt match the name we want. */
-                  if (attrs[j].type == TypeInt)
-                      offset += sizeof(int);
-                  else if (attrs[j].type == TypeReal)
-                      offset += sizeof(float);
-                  else if (attrs[j].type == TypeVarChar)
-                      offset += sizeof(unsigned) + (*(unsigned *) ((char *) tuple + offset));
-             }
-        }
+        qe_getAttribute(attr_names[i], attrs, a);
+        qe_get_tuple_element(tuple, attrs, attr_names[i], project_tuple_ptr);
+        project_tuple_ptr += qe_get_tuple_size(project_tuple_ptr, a);
     }
 
     return 0;
