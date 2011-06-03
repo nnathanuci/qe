@@ -4,7 +4,7 @@ Project::Project(Iterator *input, const vector<string> &attrNames) // {{{
 {
     iter = input;
     attr_names = attrNames;
-    getAttributes(attrs);
+    input->getAttributes(tuple_attrs);
 } // }}}
 
 RC Project::getNextTuple(void *project_tuple) // {{{
@@ -21,8 +21,8 @@ RC Project::getNextTuple(void *project_tuple) // {{{
     {
         Attribute a;
 
-        qe_get_attribute(attr_names[i], attrs, a);
-        qe_get_tuple_element(tuple, attrs, attr_names[i], project_tuple_ptr);
+        qe_get_attribute(attr_names[i], tuple_attrs, a);
+        qe_get_tuple_element(tuple, tuple_attrs, attr_names[i], project_tuple_ptr);
         project_tuple_ptr += qe_get_tuple_size(project_tuple_ptr, a);
     }
 
@@ -35,7 +35,14 @@ Project::~Project() // {{{
 
 void Project::getAttributes(vector<Attribute> &attrs) const // {{{
 {
-    iter->getAttributes(attrs);
+    attrs.clear();
+
+    for (unsigned int i = 0; i < attr_names.size(); i++)
+    {
+        Attribute a;
+        qe_get_attribute(attr_names[i], tuple_attrs, a);
+        attrs.push_back(a);
+    }
 
     return;
 } // }}}
