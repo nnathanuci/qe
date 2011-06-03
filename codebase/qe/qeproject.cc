@@ -14,7 +14,7 @@ RC Project::getNextTuple(void *project_tuple) // {{{
 
     RC rc;
 
-    if (rc = iter->getNextTuple(tuple))
+    if ((rc = iter->getNextTuple(tuple)))
         return rc;
 
     for (unsigned int i=0; i < attr_names.size(); i++)
