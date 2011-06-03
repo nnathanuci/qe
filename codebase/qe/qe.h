@@ -280,6 +280,10 @@ class NLJoin : public Iterator { // {{{
     Attribute lhs_attr;
     Attribute rhs_attr;
 
+    char left_tuple[PF_PAGE_SIZE];
+    char lhs_value[PF_PAGE_SIZE];
+    unsigned int left_size;
+
     // Nested-Loop join operator
     public:
         NLJoin(Iterator *leftIn,                             // Iterator of input R
@@ -309,6 +313,10 @@ class INLJoin : public Iterator { // {{{
     Attribute lhs_attr;
     Attribute rhs_attr;
 
+    char left_tuple[PF_PAGE_SIZE];
+    char lhs_value[PF_PAGE_SIZE];
+    unsigned int left_size;
+
 
     public:
         INLJoin(Iterator *leftIn,                               // Iterator of input R
@@ -332,6 +340,15 @@ class INLJoin : public Iterator { // {{{
         unsigned int s_len;
         string s;
     
+        qe_hash_join_key()
+        {
+            type = TypeInt;
+            float_v = 0;
+            int_v = 0;
+            s_len = 0;
+            s = "";
+        }
+
         /* need to specify a weak comparison operator. */
         bool operator<(const qe_hash_join_key &r) const
         {
@@ -428,5 +445,6 @@ unsigned qe_get_tuple_size(const void *tuple, const AttrType &t);
 void qe_get_tuple_element(const void *tuple, const Attribute &a, void *value);
 void qe_get_tuple_element(const void *tuple, const AttrType &t, void *value);
 void qe_get_tuple_element(const void *tuple, const vector<Attribute> &attrs, const Attribute &attr, void *value);
+void qe_dump_tuple_element(const void *data, const Attribute &a);
 
 #endif

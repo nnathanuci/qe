@@ -23,11 +23,6 @@ NLJoin::NLJoin(Iterator *leftIn, TableScan *rightIn, const Condition &condition,
 
 RC NLJoin::getNextTuple(void *join_data) // {{{
 {
-    /* static because we will reuse the value on subsequent calls. */
-    static unsigned char left_tuple[PF_PAGE_SIZE];
-    static unsigned char lhs_value[PF_PAGE_SIZE];
-    static unsigned int left_size;
-
     unsigned char right_tuple[PF_PAGE_SIZE];
 
     RC rc;
