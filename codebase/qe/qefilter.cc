@@ -34,48 +34,19 @@ Filter::Filter(Iterator *input, const Condition &condition) // {{{
 RC Filter::getNextTuple(void *filter_tuple) // {{{
 {
     unsigned char lhs_value[PF_PAGE_SIZE];
-    unsigned char *filter_tuple_ptr = (unsigned char *) filter_tuple;
-    bool found_lhs = false;
-    bool found_rhs = false;
+    /* rhs_value is a field, since it may already be specified as a value, see constructor. */
 
     RC rc;
 
-    if (rc = iter->getNextTuple(filter_tuple))
+    if ((rc = iter->getNextTuple(filter_tuple)))
         return rc;
 
-    for (unsigned int i=0; i < attrs.size(); i++)
-    {
-         if (attrs[i].name == lhs_attr.name)
-         {
-              found_lhs = true;
+    qe_get_tuple_element(filter_tuple, attrs, lhs_attr.name, lhs_value);
 
-              qe_get_tuple_element(filter_tuple, attrs, lhs_attr.name, lhs_value);
+    if (cond.bRhsIsAttr)
+        qe_get_tuple_element(filter_tuple, attrs, rhs_attr.name, rhs_value);
 
-              /* if rhs is just a value, or we've found the value, then we're done with checking the filter_tuple. */
-              if (!cond.bRhsIsAttr || found_rhs)
-                  break;
-         }
-         else if (cond.bRhsIsAttr && attrs[i].name == rhs_attr.name)
-         {
-             found_rhs = true;
-
-             qe_get_tuple_element(filter_tuple, attrs, rhs_attr.name, rhs_value);
-
-             /* if we've found lhs value, then we're done. */
-             if (found_lhs)
-                  break;
-         }
-
-         /* advance tuple filter_tuple. */
-         if (attrs[i].type == TypeInt)
-             filter_tuple_ptr += sizeof(int);
-         else if (attrs[i].type == TypeReal)
-             filter_tuple_ptr += sizeof(float);
-         else if (attrs[i].type == TypeVarChar)
-             filter_tuple_ptr += sizeof(unsigned) + (*(unsigned *) filter_tuple_ptr);
-    }
-
-    if (qe_cmp_values(cond.op, lhs_value, rhs_value, lhs_attr.type, rhs_attr.type))
+    if (qe_cmp_values(cond.op, lhs_value, rhs_value, lhs_attr.type, rhs_type))
         return 0;
     
     /* didnt find a match, continue searching. */
