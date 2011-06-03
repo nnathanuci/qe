@@ -28,21 +28,26 @@ Filter::Filter(Iterator *input, const Condition &condition) // {{{
 
 RC Filter::getNextTuple(void *filter_tuple) // {{{
 {
-    unsigned char lhs_value[PF_PAGE_SIZE];
+    char tuple[PF_PAGE_SIZE];
+    char lhs_value[PF_PAGE_SIZE];
     /* rhs_value is a field, since it may already be specified as a value, see constructor. */
 
     RC rc;
 
-    if ((rc = iter->getNextTuple(filter_tuple)))
+    if ((rc = iter->getNextTuple(tuple)))
         return rc;
 
-    qe_get_tuple_element(filter_tuple, attrs, lhs_attr.name, lhs_value);
+    qe_get_tuple_element(tuple, attrs, lhs_attr.name, lhs_value);
 
     if (cond.bRhsIsAttr)
-        qe_get_tuple_element(filter_tuple, attrs, rhs_attr.name, rhs_value);
+        qe_get_tuple_element(tuple, attrs, rhs_attr.name, rhs_value);
 
     if (qe_cmp_values(cond.op, lhs_value, rhs_value, lhs_attr.type, rhs_type))
+    {
+        unsigned int tuple_size = qe_get_tuple_size(tuple, attrs);
+        memcpy(filter_tuple, tuple, tuple_size);
         return 0;
+    }
     
     /* didnt find a match, continue searching. */
     return getNextTuple(filter_tuple);
